@@ -413,10 +413,9 @@
             }
         }
 
-        .book-card:active .card-actions,
-        .book-card:focus .card-actions {
-            opacity: 0 !important;
-            pointer-events: none !important;
+        .book-card:focus-within .card-actions {
+            opacity: 1;
+            pointer-events: auto;
         }
 
         .card-action-btn {
@@ -869,6 +868,29 @@
         .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); z-index: 1100; background: var(--surface); color: var(--text-main); border: 1px solid var(--border); border-radius: 12px; padding: 11px 15px; box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; display:flex; align-items:center; gap:10px; }
         .toast.show { opacity: 1; transform: translate(-50%, 0); }
         .toast button { border:0; background:transparent; color:var(--accent); font-weight:700; cursor:pointer; }
+        .share-intro { padding:16px; border-radius:18px; background:linear-gradient(135deg, color-mix(in srgb, var(--accent) 20%, var(--surface)), var(--surface)); border:1px solid var(--border); animation:fadeIn .35s var(--bezier); }
+        .share-intro p { margin:8px 0 0; color:var(--text-muted); font-size:.88rem; line-height:1.5; }
+        .share-collection-name { font-size:1.2rem; font-weight:800; overflow-wrap:anywhere; }
+        .share-controls { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+        .share-controls > div { display:flex; gap:8px; }
+        .share-controls button { border:0; background:transparent; color:var(--accent); font:inherit; font-weight:700; cursor:pointer; padding:7px 4px; }
+        .share-item { display:flex; align-items:center; gap:12px; padding:11px; background:var(--bg); border:1px solid var(--border); border-radius:16px; cursor:pointer; animation:fadeIn .3s var(--bezier) both; }
+        .share-item:hover { border-color:var(--accent); background:var(--surface-hover); }
+        .share-item input { width:18px; height:18px; flex-shrink:0; accent-color:var(--accent); }
+        .share-item-icon { width:44px; height:44px; display:flex; align-items:center; justify-content:center; flex-shrink:0; border-radius:13px; overflow:hidden; background:var(--surface-hover); font-size:1.5rem; }
+        .share-item-icon img { width:100%; height:100%; object-fit:cover; }
+        .share-item-copy { min-width:0; flex:1; }
+        .share-item-copy strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .share-item-copy span { display:block; margin-top:3px; color:var(--text-muted); font-size:.76rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .manage-list { display:flex; flex-direction:column; gap:8px; max-height:42vh; overflow:auto; }
+        .manage-row { display:flex; align-items:center; gap:10px; padding:10px; border:1px solid var(--border); background:var(--bg); border-radius:13px; }
+        .manage-row input { accent-color:var(--accent); }
+        .manage-row span { flex:1; }
+        .manage-kind { color:var(--text-muted); font-size:.72rem; }
+        .history-row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px; border:1px solid var(--border); background:var(--bg); border-radius:13px; }
+        .history-row small { display:block; color:var(--text-muted); margin-top:3px; }
+        .settings-scroll { max-height:35vh; overflow:auto; display:flex; flex-direction:column; gap:8px; }
+        .share-items-list { max-height:34vh; overflow:auto; }
         .modal-tabs { display:flex; gap:6px; background:var(--surface-hover); padding:4px; border-radius:14px; margin-bottom:14px; }
         .modal-tab { flex:1; border:0; background:transparent; color:var(--text-muted); padding:10px; border-radius:11px; font:inherit; font-weight:600; cursor:pointer; transition:.2s var(--bezier); }
         .modal-tab.active { background:var(--surface); color:var(--text-main); box-shadow:var(--shadow); }
@@ -1035,6 +1057,14 @@
                 <button class="btn btn-secondary btn-full" onclick="shareCollection()">
                     <i data-lucide="share-2" size="16"></i> Compartir Colección mediante Enlace
                 </button>
+                <button class="btn btn-secondary btn-full" onclick="openManageLibrary()">
+                    <i data-lucide="list-checks" size="16"></i> Gestionar y retirar varios accesos
+                </button>
+                <button class="btn btn-secondary btn-full" onclick="openModal('trash-modal'); renderTrash()">
+                    <i data-lucide="trash-2" size="16"></i> Papelera <span id="trash-count"></span>
+                </button>
+                <div class="settings-label" style="margin-top:6px;">Recibimientos recientes</div>
+                <div class="settings-scroll" id="received-history"></div>
                 <div class="row-group">
                     <button class="btn btn-secondary btn-full" onclick="downloadSettings()">
                         <i data-lucide="download" size="16"></i> Exportar
@@ -1171,26 +1201,52 @@
     <div class="modal-overlay" id="share-modal" onclick="closeModalOnOverlay(event, 'share-modal')">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title" id="share-modal-title">Acceso Compartido Recibido</div>
+                <div class="modal-title" id="share-modal-title">Acceso compartido recibido</div>
                 <button class="icon-btn" onclick="closeActiveModal('share-modal')" style="width: 32px; height: 32px;">
                     <i data-lucide="x" size="16"></i>
                 </button>
             </div>
-            
-            <!-- Advertencia requerida -->
-            <div style="background: rgba(255, 69, 58, 0.12); border: 1px solid var(--accent-danger); color: var(--text-main); padding: 12px 14px; border-radius: 14px; font-size: 0.85rem; display: flex; align-items: center; gap: 10px;">
-                <i data-lucide="alert-triangle" size="20" style="color: var(--accent-danger); flex-shrink: 0;"></i>
-                <span><strong>Advertencia:</strong> Solo recibe Colecciones/Herramientas de gente en la que confías.</span>
+            <div class="share-intro">
+                <div class="share-collection-name" id="share-collection-name"></div>
+                <p id="share-modal-desc">Revisa los accesos antes de añadirlos. Solo se importarán los que marques.</p>
             </div>
-
-            <div style="font-size: 0.9rem; color: var(--text-muted);" id="share-modal-desc">
-                Se han encontrado recursos compartidos. Puedes añadirlos a tu biblioteca actual.
+            <div style="background:rgba(255,69,58,.12);border:1px solid var(--accent-danger);padding:12px 14px;border-radius:14px;font-size:.84rem;display:flex;align-items:flex-start;gap:10px;">
+                <i data-lucide="shield-alert" size="19" style="color:var(--accent-danger);flex-shrink:0;"></i>
+                <span><strong>Antes de continuar:</strong> recibir un enlace no verifica que sea seguro. Comprueba que conoces a quien lo envía y revisa los sitios seleccionados. No abriremos los enlaces durante la importación.</span>
             </div>
-            <div class="preset-list" id="shared-items-preview"></div>
+            <div class="share-controls">
+                <strong id="share-selection-count">0 seleccionados</strong>
+                <div><button type="button" onclick="selectSharedItems(true)">Seleccionar todo</button><button type="button" onclick="selectSharedItems(false)">Nada</button></div>
+            </div>
+            <div class="preset-list share-items-list" id="shared-items-preview"></div>
             <div class="modal-actions">
                 <button class="btn btn-secondary" onclick="closeActiveModal('share-modal')">Ignorar</button>
-                <button class="btn btn-primary" onclick="confirmImportShared()">Importar Recursos</button>
+                <button class="btn btn-primary" id="import-shared-btn" onclick="confirmImportShared()">Añadir seleccionados</button>
             </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="manage-library-modal" onclick="closeModalOnOverlay(event, 'manage-library-modal')">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Gestionar accesos</div>
+                <button class="icon-btn" onclick="closeActiveModal('manage-library-modal')"><i data-lucide="x" size="16"></i></button>
+            </div>
+            <div style="color:var(--text-muted);font-size:.88rem;line-height:1.45">Marca varios accesos y retíralos de una vez. Los predefinidos se desactivan; los personalizados van a la papelera durante 30 días.</div>
+            <div class="share-controls"><strong id="manage-selection-count">0 seleccionados</strong><div><button type="button" onclick="selectManageItems(true)">Todo</button><button type="button" onclick="selectManageItems(false)">Nada</button></div></div>
+            <div class="manage-list" id="manage-library-list"></div>
+            <div class="modal-actions"><button class="btn btn-secondary" onclick="closeActiveModal('manage-library-modal')">Cancelar</button><button class="btn btn-primary" onclick="removeManagedBooks()">Retirar seleccionados</button></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="trash-modal" onclick="closeModalOnOverlay(event, 'trash-modal')">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Papelera</div>
+                <button class="icon-btn" onclick="closeActiveModal('trash-modal')"><i data-lucide="x" size="16"></i></button>
+            </div>
+            <div style="color:var(--text-muted);font-size:.88rem;line-height:1.45">Los accesos personalizados se eliminan definitivamente a los 30 días. Puedes restaurarlos antes de que caduquen.</div>
+            <div class="manage-list" id="trash-list"></div>
         </div>
     </div>
 
@@ -1284,6 +1340,8 @@ const PRESET_BOOKS = [
             customBooks: [],
             favorites: [],
             pinned: [],
+            trash: [],
+            receivedHistory: [],
             showAddButton: true,
             showGuideButton: true,
             density: 'normal'
@@ -1296,6 +1354,9 @@ const PRESET_BOOKS = [
 
         let editingBookId = null;
         let pendingSharedItems = [];
+        let pendingShareName = '';
+        let pendingShareType = 'single';
+        let selectedSharedItems = [];
         let searchQuery = '';
         let tempSelectedPresets = [];
         let activeModalsStack = [];
@@ -1304,7 +1365,6 @@ const PRESET_BOOKS = [
         let longPressTimer = null;
         let contextMenuEl = null;
         let iconMode = 'url';
-        let lastDeletedBook = null;
         let logoClickCount = 0;
         let logoClickTimer = null;
 
@@ -1321,8 +1381,11 @@ const PRESET_BOOKS = [
 
             appState.favorites = appState.favorites || [];
             appState.pinned = appState.pinned || [];
+            appState.trash = Array.isArray(appState.trash) ? appState.trash : [];
+            appState.receivedHistory = Array.isArray(appState.receivedHistory) ? appState.receivedHistory : [];
             if (appState.showAddButton === undefined) appState.showAddButton = true;
             if (appState.showGuideButton === undefined) appState.showGuideButton = true;
+            purgeExpiredTrash();
 
             applyTheme(appState.theme);
             applyAccent(appState.accent);
@@ -1333,6 +1396,8 @@ const PRESET_BOOKS = [
             document.getElementById('show-add-btn-input').checked = appState.showAddButton;
             document.getElementById('show-guide-btn-input').checked = appState.showGuideButton;
             toggleGuideBtnVisibility(appState.showGuideButton, false);
+            renderReceivedHistory();
+            renderTrash();
 
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
                 if (!localStorage.getItem('school_library_data')) {
@@ -1354,35 +1419,45 @@ const PRESET_BOOKS = [
                     const jsonString = decodeURIComponent(escape(atob(encoded)));
                     const shareData = JSON.parse(jsonString);
                     if (shareData && Array.isArray(shareData.resources) && shareData.resources.length > 0) {
-                        pendingSharedItems = shareData.resources;
+                        pendingSharedItems = shareData.resources.filter(item => item && typeof item === 'object');
+                        if (!pendingSharedItems.length) return;
+                        pendingShareName = typeof shareData.name === 'string' && shareData.name.trim()
+                            ? shareData.name.trim()
+                            : (shareData.type === 'collection' ? 'Colección compartida' : 'Acceso compartido');
+                        pendingShareType = shareData.type === 'collection' || pendingSharedItems.length > 1 ? 'collection' : 'single';
+                        selectedSharedItems = pendingSharedItems.map(() => true);
                         const isSingle = shareData.type === 'single' || shareData.resources.length === 1;
 
                         const titleEl = document.getElementById('share-modal-title');
                         const descEl = document.getElementById('share-modal-desc');
+                        const nameEl = document.getElementById('share-collection-name');
 
                         if (titleEl) {
-                            titleEl.textContent = isSingle ? 'Acceso Compartido Recibido' : 'Colección Compartida Recibida';
+                            titleEl.textContent = isSingle ? 'Acceso compartido recibido' : 'Colección recibida';
                         }
                         if (descEl) {
-                            descEl.textContent = isSingle 
-                                ? 'Se ha compartido 1 acceso contigo. Puedes añadirlo a tu biblioteca actual.' 
-                                : `Se han encontrado ${shareData.resources.length} recursos compartidos. Puedes añadirlos a tu biblioteca actual.`;
+                            descEl.textContent = isSingle
+                                ? 'Revisa este acceso antes de añadirlo. Puedes deshacer la recepción más tarde desde Ajustes.'
+                                : `Te han enviado ${pendingSharedItems.length} accesos. Elige cuáles quieres añadir; no se abrirá ningún sitio al importarlos.`;
                         }
+                        if (nameEl) nameEl.textContent = pendingShareType === 'single' ? (pendingSharedItems[0].title || pendingShareName) : pendingShareName;
 
                         const previewContainer = document.getElementById('shared-items-preview');
                         if (previewContainer) {
-                            previewContainer.innerHTML = pendingSharedItems.map(item => `
-                                <div class="preset-item" style="border-left: 4px solid ${escapeHtml(item.color || 'var(--accent)')};">
-                                    <div class="preset-info">
-                                        <div>
-                                            <div class="preset-name">${escapeHtml(item.title)}</div>
-                                            <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(item.description || item.url || '')}</div>
-                                        </div>
-                                    </div>
-                                </div>
+                            previewContainer.innerHTML = pendingSharedItems.map((item, index) => `
+                                <label class="share-item" style="animation-delay:${Math.min(index * 45, 450)}ms">
+                                    <input type="checkbox" checked onchange="setSharedItemSelected(${index}, this.checked)" aria-label="Añadir ${escapeHtml(item.title || 'Recurso')}">
+                                    <span class="share-item-icon">${getSharedItemIconHtml(item)}</span>
+                                    <span class="share-item-copy">
+                                        <strong>${escapeHtml(item.title || 'Recurso sin título')}</strong>
+                                        <span>${escapeHtml(item.description || item.url || 'Sin descripción')}</span>
+                                    </span>
+                                </label>
                             `).join('');
                         }
+                        updateSharedSelection();
                         openModal('share-modal');
+                        lucide.createIcons();
                     }
                 } catch (e) {
                     console.error("Error al cargar datos compartidos", e);
@@ -1391,12 +1466,19 @@ const PRESET_BOOKS = [
         }
 
         function confirmImportShared() {
-            if (pendingSharedItems && pendingSharedItems.length > 0) {
-                pendingSharedItems.forEach(item => {
+            const selected = pendingSharedItems.filter((_, index) => selectedSharedItems[index]);
+            if (!selected.length) {
+                showToast('Selecciona al menos un acceso para añadirlo.');
+                return;
+            }
+            if (selected.length > 0) {
+                const importedBooks = selected.map(item => {
+                    const url = safeSharedUrl(item.url);
+                    if (!url) return null;
                     const newBook = {
-                        id: Date.now().toString() + Math.random().toString(36).substr(2, 4),
+                        id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
                         title: item.title || 'Recurso',
-                        url: item.url || '#',
+                        url,
                         description: item.description || '',
                         logo: item.logo || '',
                         logoSquare: item.logoSquare || '',
@@ -1407,14 +1489,70 @@ const PRESET_BOOKS = [
                         target: item.target || '_blank',
                         isDefault: false
                     };
-                    appState.customBooks.push(newBook);
+                    return newBook;
                 });
+                const validBooks = importedBooks.filter(Boolean);
+                if (!validBooks.length) {
+                    showToast('No se pudo importar: los enlaces deben usar http o https.');
+                    return;
+                }
+                appState.customBooks.push(...validBooks);
+                const receipt = {
+                    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+                    name: pendingShareName,
+                    type: pendingShareType,
+                    receivedAt: Date.now(),
+                    books: validBooks.map(book => ({ ...book }))
+                };
+                appState.receivedHistory.unshift(receipt);
+                appState.receivedHistory = appState.receivedHistory.slice(0, 50);
                 saveData();
                 renderApp();
-                showToast(pendingSharedItems.length === 1 ? 'Acceso importado con éxito' : 'Recursos importados con éxito');
+                renderReceivedHistory();
+                showToast(validBooks.length === 1 ? 'Acceso añadido a tu biblioteca.' : `${validBooks.length} accesos añadidos a tu biblioteca.`, 'Deshacer', () => undoReceived(receipt.id));
                 window.location.hash = '';
             }
             closeActiveModal('share-modal');
+        }
+
+        function safeSharedUrl(value) {
+            try {
+                const url = new URL(value);
+                return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
+            } catch (_) {
+                return '';
+            }
+        }
+
+        function getSharedItemIconHtml(item) {
+            if (item.iconType === 'emoji' && item.iconValue) return escapeHtml(item.iconValue);
+            if (item.iconType === 'lucide' && item.iconValue) return `<i data-lucide="${escapeHtml(item.iconValue)}" size="22"></i>`;
+            if (item.iconType === 'favicon') {
+                try {
+                    const host = new URL(safeSharedUrl(item.url)).hostname;
+                    return `<img src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=128" alt="">`;
+                } catch (_) {}
+            }
+            const image = item.logoSquare || item.logo;
+            if (image) return `<img src="${escapeHtml(image)}" alt="" onerror="this.remove()">`;
+            return '<i data-lucide="globe-2" size="22"></i>';
+        }
+
+        function setSharedItemSelected(index, selected) {
+            selectedSharedItems[index] = selected;
+            updateSharedSelection();
+        }
+
+        function selectSharedItems(selected) {
+            selectedSharedItems = pendingSharedItems.map(() => selected);
+            document.querySelectorAll('#shared-items-preview input[type="checkbox"]').forEach(input => { input.checked = selected; });
+            updateSharedSelection();
+        }
+
+        function updateSharedSelection() {
+            const count = selectedSharedItems.filter(Boolean).length;
+            document.getElementById('share-selection-count').textContent = `${count} de ${pendingSharedItems.length} seleccionados`;
+            document.getElementById('import-shared-btn').disabled = count === 0;
         }
 
         function renderVersionInfo() {
@@ -1584,7 +1722,10 @@ const PRESET_BOOKS = [
         function showToast(message, actionLabel, action) {
             let toast = document.getElementById('app-toast');
             if (!toast) { toast=document.createElement('div'); toast.id='app-toast'; toast.className='toast'; document.body.appendChild(toast); }
-            toast.innerHTML = `<span>${message}</span>`;
+            toast.replaceChildren();
+            const text = document.createElement('span');
+            text.textContent = message;
+            toast.appendChild(text);
             if (actionLabel) { const b=document.createElement('button'); b.textContent=actionLabel; b.onclick=()=>{toast.classList.remove('show');action();}; toast.appendChild(b); }
             toast.classList.add('show'); clearTimeout(toast._timer); toast._timer=setTimeout(()=>toast.classList.remove('show'), actionLabel?5000:2200);
         }
@@ -1846,6 +1987,10 @@ const PRESET_BOOKS = [
                 initPresetSelection();
                 renderPresetModal();
             }
+            if (modalId === 'settings-modal') {
+                renderReceivedHistory();
+                renderTrash();
+            }
             document.getElementById(modalId).classList.add('active');
             activeModalsStack.push(modalId);
             window.history.pushState({ modalId: modalId }, "");
@@ -2014,26 +2159,223 @@ const PRESET_BOOKS = [
             }
         }
 
-        function deleteCustomBook(e,id){
-            if(e){e.preventDefault();e.stopPropagation();}
-            const index=appState.customBooks.findIndex(b=>b.id===id);
-            if(index===-1)return;
-            lastDeletedBook={book:appState.customBooks[index],index};
-            appState.customBooks.splice(index,1);
-            appState.favorites=appState.favorites.filter(f=>f!==id);
-            appState.pinned=appState.pinned.filter(p=>p!==id);
-            saveData();renderApp();
-            showToast('Recurso eliminado','Deshacer',undoDelete);
+        const TRASH_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
+
+        function purgeExpiredTrash() {
+            const cutoff = Date.now() - TRASH_RETENTION_MS;
+            const kept = appState.trash.filter(entry => entry && Number(entry.deletedAt) > cutoff);
+            if (kept.length !== appState.trash.length) {
+                appState.trash = kept;
+                saveData();
+            }
         }
 
-        function undoDelete(){
-            if(!lastDeletedBook)return;
-            appState.customBooks.splice(Math.min(lastDeletedBook.index,appState.customBooks.length),0,lastDeletedBook.book);
-            lastDeletedBook=null;saveData();renderApp();showToast('Recurso restaurado');
+        function moveCustomBookToTrash(id) {
+            const index = appState.customBooks.findIndex(book => book.id === id);
+            if (index < 0) return null;
+            const book = appState.customBooks[index];
+            const entry = {
+                id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+                book,
+                index,
+                deletedAt: Date.now(),
+                wasFavorite: appState.favorites.includes(id),
+                wasPinned: appState.pinned.includes(id)
+            };
+            appState.customBooks.splice(index, 1);
+            appState.favorites = appState.favorites.filter(favoriteId => favoriteId !== id);
+            appState.pinned = appState.pinned.filter(pinnedId => pinnedId !== id);
+            appState.trash.unshift(entry);
+            return entry;
+        }
+
+        function restoreTrashEntry(entryId, shouldNotify = true) {
+            const index = appState.trash.findIndex(entry => entry.id === entryId);
+            if (index < 0) return;
+            const [entry] = appState.trash.splice(index, 1);
+            if (!appState.customBooks.some(book => book.id === entry.book.id)) {
+                appState.customBooks.splice(Math.min(entry.index, appState.customBooks.length), 0, entry.book);
+                if (entry.wasFavorite) appState.favorites.push(entry.book.id);
+                if (entry.wasPinned) appState.pinned.push(entry.book.id);
+            }
+            saveData();
+            renderApp();
+            renderTrash();
+            if (shouldNotify) showToast('Acceso restaurado desde la papelera.');
+        }
+
+        function deleteCustomBook(e,id){
+            if(e){e.preventDefault();e.stopPropagation();}
+            const entry = moveCustomBookToTrash(id);
+            if (!entry) return;
+            saveData();renderApp();renderTrash();
+            showToast('Acceso movido a la papelera por 30 días.', 'Deshacer', () => restoreTrashEntry(entry.id));
         }
 
         function deleteFromEditModal(){
             if(editingBookId){deleteCustomBook(null,editingBookId);closeActiveModal('add-modal');}
+        }
+
+        function undoReceived(receiptId) {
+            const receipt = appState.receivedHistory.find(item => item.id === receiptId);
+            if (!receipt || receipt.undoneAt) return;
+            const importedIds = new Set(receipt.books.map(book => book.id));
+            appState.customBooks = appState.customBooks.filter(book => !importedIds.has(book.id));
+            appState.trash = appState.trash.filter(entry => !importedIds.has(entry.book.id));
+            appState.favorites = appState.favorites.filter(id => !importedIds.has(id));
+            appState.pinned = appState.pinned.filter(id => !importedIds.has(id));
+            receipt.undoneAt = Date.now();
+            saveData();
+            renderApp();
+            renderReceivedHistory();
+            renderTrash();
+            showToast('Se deshizo la recepción y se retiraron sus accesos.');
+        }
+
+        function renderReceivedHistory() {
+            const container = document.getElementById('received-history');
+            if (!container) return;
+            container.replaceChildren();
+            if (!appState.receivedHistory.length) {
+                const empty = document.createElement('div');
+                empty.className = 'version-info';
+                empty.textContent = 'Aquí aparecerán los enlaces y colecciones recibidos en este dispositivo.';
+                container.appendChild(empty);
+                return;
+            }
+            appState.receivedHistory.forEach(receipt => {
+                const row = document.createElement('div');
+                row.className = 'history-row';
+                const info = document.createElement('div');
+                const title = document.createElement('strong');
+                title.textContent = receipt.name || 'Acceso compartido';
+                const detail = document.createElement('small');
+                detail.textContent = `${receipt.books.length} ${receipt.books.length === 1 ? 'acceso' : 'accesos'} · ${new Date(receipt.receivedAt).toLocaleDateString()}`;
+                info.append(title, detail);
+                row.appendChild(info);
+                if (receipt.undoneAt) {
+                    const status = document.createElement('small');
+                    status.textContent = 'Deshecho';
+                    row.appendChild(status);
+                } else {
+                    const undo = document.createElement('button');
+                    undo.className = 'btn btn-secondary';
+                    undo.textContent = 'Deshacer';
+                    undo.onclick = () => undoReceived(receipt.id);
+                    row.appendChild(undo);
+                }
+                container.appendChild(row);
+            });
+        }
+
+        function openManageLibrary() {
+            renderManageLibrary();
+            openModal('manage-library-modal');
+        }
+
+        function renderManageLibrary() {
+            const list = document.getElementById('manage-library-list');
+            list.replaceChildren();
+            const selectedPresets = PRESET_BOOKS.filter(book => appState.selectedPresets.includes(book.id));
+            const entries = [
+                ...selectedPresets.map(book => ({ book, kind: 'preset' })),
+                ...appState.customBooks.map(book => ({ book, kind: 'custom' }))
+            ];
+            if (!entries.length) {
+                const empty = document.createElement('div');
+                empty.className = 'version-info';
+                empty.textContent = 'No hay accesos para gestionar.';
+                list.appendChild(empty);
+            }
+            entries.forEach(({ book, kind }) => {
+                const label = document.createElement('label');
+                label.className = 'manage-row';
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.dataset.kind = kind;
+                checkbox.dataset.bookId = book.id;
+                checkbox.addEventListener('change', updateManageSelection);
+                const title = document.createElement('span');
+                title.textContent = book.title;
+                const type = document.createElement('small');
+                type.className = 'manage-kind';
+                type.textContent = kind === 'preset' ? 'Predefinido' : 'Personalizado';
+                label.append(checkbox, title, type);
+                list.appendChild(label);
+            });
+            updateManageSelection();
+        }
+
+        function updateManageSelection() {
+            const count = document.querySelectorAll('#manage-library-list input:checked').length;
+            document.getElementById('manage-selection-count').textContent = `${count} seleccionados`;
+        }
+
+        function selectManageItems(selected) {
+            document.querySelectorAll('#manage-library-list input[type="checkbox"]').forEach(input => { input.checked = selected; });
+            updateManageSelection();
+        }
+
+        function removeManagedBooks() {
+            const selected = [...document.querySelectorAll('#manage-library-list input:checked')];
+            if (!selected.length) {
+                showToast('Selecciona al menos un acceso.');
+                return;
+            }
+            const presetIds = selected.filter(input => input.dataset.kind === 'preset').map(input => input.dataset.bookId);
+            const previousPresets = [...appState.selectedPresets];
+            appState.selectedPresets = appState.selectedPresets.filter(id => !presetIds.includes(id));
+            const trashedEntries = selected
+                .filter(input => input.dataset.kind === 'custom')
+                .map(input => moveCustomBookToTrash(input.dataset.bookId))
+                .filter(Boolean);
+            saveData();
+            renderApp();
+            renderManageLibrary();
+            renderTrash();
+            closeActiveModal('manage-library-modal');
+            const removedCount = presetIds.length + trashedEntries.length;
+            showToast(`${removedCount} ${removedCount === 1 ? 'acceso retirado' : 'accesos retirados'}.`, 'Deshacer', () => {
+                trashedEntries.forEach(entry => restoreTrashEntry(entry.id, false));
+                appState.selectedPresets = [...new Set([...appState.selectedPresets, ...previousPresets])];
+                saveData();
+                renderApp();
+                renderTrash();
+                showToast('Se restauraron los accesos retirados.');
+            });
+        }
+
+        function renderTrash() {
+            purgeExpiredTrash();
+            const list = document.getElementById('trash-list');
+            const count = document.getElementById('trash-count');
+            if (count) count.textContent = appState.trash.length ? `(${appState.trash.length})` : '';
+            if (!list) return;
+            list.replaceChildren();
+            if (!appState.trash.length) {
+                const empty = document.createElement('div');
+                empty.className = 'version-info';
+                empty.textContent = 'La papelera está vacía.';
+                list.appendChild(empty);
+                return;
+            }
+            appState.trash.forEach(entry => {
+                const row = document.createElement('div');
+                row.className = 'history-row';
+                const info = document.createElement('div');
+                const title = document.createElement('strong');
+                title.textContent = entry.book.title;
+                const expiry = document.createElement('small');
+                const daysLeft = Math.max(0, Math.ceil((entry.deletedAt + TRASH_RETENTION_MS - Date.now()) / (24 * 60 * 60 * 1000)));
+                expiry.textContent = `Se eliminará en ${daysLeft} ${daysLeft === 1 ? 'día' : 'días'}`;
+                info.append(title, expiry);
+                const restore = document.createElement('button');
+                restore.className = 'btn btn-secondary';
+                restore.textContent = 'Restaurar';
+                restore.onclick = () => restoreTrashEntry(entry.id);
+                row.append(info, restore);
+                list.appendChild(row);
+            });
         }
 
         function switchAddTab(tab){
@@ -2078,6 +2420,8 @@ const PRESET_BOOKS = [
                 customBooks: appState.customBooks,
                 favorites: appState.favorites,
                 pinned: appState.pinned,
+                trash: appState.trash,
+                receivedHistory: appState.receivedHistory,
                 showAddButton: appState.showAddButton,
                 showGuideButton: appState.showGuideButton
             };
@@ -2101,6 +2445,11 @@ const PRESET_BOOKS = [
                     const importedState = JSON.parse(e.target.result);
                     if (importedState) {
                         appState = { ...appState, ...importedState };
+                        appState.trash = Array.isArray(appState.trash) ? appState.trash : [];
+                        appState.receivedHistory = Array.isArray(appState.receivedHistory) ? appState.receivedHistory : [];
+                        appState.favorites = appState.favorites || [];
+                        appState.pinned = appState.pinned || [];
+                        purgeExpiredTrash();
                         saveData();
                         applyTheme(appState.theme);
                         applyAccent(appState.accent);
@@ -2109,6 +2458,8 @@ const PRESET_BOOKS = [
                         document.getElementById('show-guide-btn-input').checked = appState.showGuideButton;
                         toggleGuideBtnVisibility(appState.showGuideButton, false);
                         renderApp();
+                        renderReceivedHistory();
+                        renderTrash();
                         alert("Copia de seguridad importada correctamente.");
                         closeActiveModal('settings-modal');
                     }
