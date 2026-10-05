@@ -140,6 +140,7 @@ acceso-libros/
 └── Media/
     ├── consejos.html
     └── preset-editor.html
+```
 ​index.html: Aplicación principal de Acceso Libros. Contiene la interfaz, estilos y lógica necesaria para gestionar la biblioteca.
 ​Media/preset-editor.html: Editor visual utilizado para crear y mantener los presets de recursos.
 ​Media/consejos.html: Página de consejos y documentación para los usuarios de la aplicación.
