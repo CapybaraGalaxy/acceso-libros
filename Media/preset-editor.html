@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Book Preset Editor</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --bg: #0b0c10;
+    --surface: #13151b;
+    --surface-2: #1a1c23;
+    --surface-3: #22252e;
+    --border: rgba(255,255,255,.09);
+    --text: #f4f4f6;
+    --muted: #999daa;
+    --primary: #b5c4ff;
+    --primary-dark: #344479;
+    --danger: #ff453a;
+    --success: #34c759;
+    --radius: 18px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    font-family: "Outfit", sans-serif;
+    background:
+        radial-gradient(circle at 80% -10%, rgba(80,100,180,.15), transparent 35%),
+        var(--bg);
+    color: var(--text);
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button {
+    border: 0;
+    cursor: pointer;
+}
+
+.app {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+}
+
+/* HEADER */
+
+header {
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(11,12,16,.78);
+    backdrop-filter: blur(20px);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: var(--primary-dark);
+    color: var(--primary);
+    font-size: 19px;
+}
+
+.brand h1 {
+    font-size: 17px;
+    margin: 0;
+    font-weight: 600;
+}
+
+.brand span {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* BUTTONS */
+
+.btn {
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    transition: .18s ease;
+}
+
+.btn:hover {
+    background: var(--surface-3);
+    transform: translateY(-1px);
+}
+
+.btn.primary {
+    background: var(--primary);
+    color: #11131a;
+    border-color: transparent;
+    font-weight: 600;
+}
+
+.btn.danger {
+    color: #ff8a84;
+}
+
+.btn.small {
+    min-height: 34px;
+    padding: 0 10px;
+    font-size: 13px;
+}
+
+.icon-btn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 10px;
+    background: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+/* LAYOUT */
+
+.workspace {
+    display: grid;
+    grid-template-columns: minmax(340px, 470px) minmax(0, 1fr);
+    min-height: 0;
+}
+
+.editor-panel {
+    border-right: 1px solid var(--border);
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.preview-panel {
+    padding: 24px;
+    overflow-y: auto;
+    min-width: 0;
+}
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.section-title h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.section-title span {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+/* FORM */
+
+.form-card {
+    background: rgba(19,21,27,.82);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+}
+
+.field {
+    margin-bottom: 15px;
+}
+
+.field:last-child {
+    margin-bottom: 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 7px;
+    color: #d7d8df;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: #0e1015;
+    color: var(--text);
+    border-radius: 11px;
+    outline: none;
+    padding: 11px 12px;
+    transition: .18s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: rgba(181,196,255,.6);
+    box-shadow: 0 0 0 3px rgba(181,196,255,.08);
+}
+
+textarea {
+    min-height: 86px;
+    resize: vertical;
+}
+
+.two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.color-row {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 8px;
+}
+
+input[type="color"] {
+    height: 42px;
+    padding: 4px;
+    cursor: pointer;
+}
+
+/* TAGS */
+
+.tags-editor {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 7px;
+    border: 1px solid var(--border);
+    background: #0e1015;
+    border-radius: 11px;
+}
+
+.tags-editor:focus-within {
+    border-color: rgba(181,196,255,.6);
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--surface-3);
+    border-radius: 8px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+
+.tag button {
+    background: transparent;
+    color: var(--muted);
+    padding: 0;
+    line-height: 1;
+}
+
+.tag-input {
+    min-width: 100px;
+    flex: 1;
+    border: 0;
+    box-shadow: none !important;
+    background: transparent;
+    padding: 5px;
+}
+
+/* PREVIEW */
+
+.preview-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.preview-switch {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+}
+
+.preview-switch button {
+    padding: 7px 11px;
+    border-radius: 8px;
+    color: var(--muted);
+    background: transparent;
+    font-size: 12px;
+}
+
+.preview-switch button.active {
+    color: var(--text);
+    background: var(--surface-3);
+}
+
+/* BOOK CARD */
+
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 14px;
+}
+
+.book-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: rgba(19,21,27,.88);
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+    transition: .2s ease;
+}
+
+.book-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,255,255,.15);
+}
+
+.book-cover {
+    height: 130px;
+    position: relative;
+    overflow: hidden;
+    background: var(--surface-2);
+}
+
+.book-cover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        transparent 20%,
+        rgba(19,21,27,.9)
+    );
+}
+
+.book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.book-content {
+    position: relative;
+    z-index: 2;
+    margin-top: -30px;
+    padding: 0 15px 15px;
+}
+
+.book-logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 3px solid var(--surface);
+    background: var(--surface-2);
+    margin-bottom: 9px;
+}
+
+.book-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.book-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.book-description {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.45;
+    min-height: 35px;
+}
+
+.book-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.book-tag {
+    font-size: 10px;
+    padding: 4px 7px;
+    border-radius: 7px;
+    background: var(--surface-3);
+    color: #d4d5db;
+}
+
+.book-accent {
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    bottom: 0;
+    left: 0;
+}
+
+/* EDIT LIST */
+
+.editor-list {
+    margin-top: 24px;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 13px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+}
+
+.item.active {
+    border-color: rgba(181,196,255,.45);
+    background: rgba(52,68,121,.22);
+}
+
+.item-thumb {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--surface-2);
+}
+
+.item-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.item-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.item-title {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.item-id {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+.item-actions {
+    display: flex;
+    gap: 3px;
+}
+
+.item-actions button {
+    width: 27px;
+    height: 27px;
+    border-radius: 7px;
+    color: var(--muted);
+    background: transparent;
+}
+
+.item-actions button:hover {
+    background: var(--surface-3);
+    color: var(--text);
+}
+
+/* CODE */
+
+.code-panel {
+    margin-top: 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 11px 14px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.code-header span {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+pre {
+    margin: 0;
+    padding: 16px;
+    overflow: auto;
+    max-height: 300px;
+    background: #090a0e;
+    color: #d9e2ff;
+    font: 12px/1.55 Consolas, monospace;
+}
+
+/* EMPTY */
+
+.empty {
+    min-height: 300px;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    color: var(--muted);
+    border: 1px dashed var(--border);
+    border-radius: 20px;
+}
+
+.empty strong {
+    display: block;
+    color: var(--text);
+    margin-bottom: 5px;
+}
+
+/* TOAST */
+
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translate(-50%, 20px);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 100;
+    padding: 11px 15px;
+    border-radius: 12px;
+    background: #24262e;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 40px rgba(0,0,0,.4);
+    font-size: 13px;
+    transition: .25s cubic-bezier(.16,1,.3,1);
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+/* MODAL */
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0,0,0,.65);
+    backdrop-filter: blur(15px);
+}
+
+.modal-backdrop.open {
+    display: flex;
+}
+
+.modal {
+    width: min(800px, 100%);
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    background: #15171d;
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 25px 80px rgba(0,0,0,.5);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-header strong {
+    font-size: 15px;
+}
+
+.modal-body {
+    padding: 18px;
+    overflow: auto;
+}
+
+.modal-body textarea {
+    width: 100%;
+    min-height: 380px;
+    font: 12px/1.5 Consolas, monospace;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 13px 18px;
+    border-top: 1px solid var(--border);
+}
+
+/* MOBILE */
+
+@media (max-width: 850px) {
+    header {
+        padding: 0 14px;
+    }
+
+    .header-actions .secondary {
+        display: none;
+    }
+
+    .workspace {
+        display: block;
+    }
+
+    .editor-panel {
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .preview-panel {
+        padding-top: 20px;
+    }
+}
+
+@media (max-width: 520px) {
+    .editor-panel,
+    .preview-panel {
+        padding: 16px;
+    }
+
+    .two-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .books-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .brand span {
+        display: none;
+    }
+
+    .header-actions .secondary {
+        display: none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+    <div class="brand">
+        <div class="brand-icon">▤</div>
+        <div>
+            <h1>Book Preset Editor</h1>
+            <span>Editor visual de PRESET_BOOKS</span>
+        </div>
+    </div>
+
+    <div class="header-actions">
+        <button class="btn secondary" id="importBtn">Importar</button>
+        <button class="btn" id="exportBtn">Exportar</button>
+        <button class="btn primary" id="addBtn">＋ Añadir libro</button>
+    </div>
+</header>
+
+<main class="workspace">
+
+    <section class="editor-panel">
+
+        <div class="section-title">
+            <h2 id="editorTitle">Nuevo libro</h2>
+            <span id="bookCounter">0 libros</span>
+        </div>
+
+        <div class="form-card">
+
+            <div class="field">
+                <label for="id">ID</label>
+                <input id="id" placeholder="ej. gutenberg">
+            </div>
+
+            <div class="field">
+                <label for="title">Título</label>
+                <input id="title" placeholder="Project Gutenberg">
+            </div>
+
+            <div class="field">
+                <label for="url">URL</label>
+                <input id="url" type="url" placeholder="https://www.gutenberg.org">
+            </div>
+
+            <div class="field">
+                <label for="logo">URL de imagen horizontal</label>
+                <input id="logo" type="url" placeholder="https://...">
+            </div>
+
+            <div class="field">
+                <label for="logoSquare">URL de imagen cuadrada</label>
+                <input id="logoSquare" type="url" placeholder="https://...">
+            </div>
+
+            <div class="field">
+                <label for="description">Descripción</label>
+                <textarea id="description" placeholder="Descripción breve del recurso..."></textarea>
+            </div>
+
+            <div class="field">
+                <label>Tags</label>
+
+                <div class="tags-editor" id="tagsEditor">
+                    <input
+                        class="tag-input"
+                        id="tagInput"
+                        placeholder="Escribe un tag y pulsa Enter"
+                    >
+                </div>
+            </div>
+
+            <div class="two-columns">
+
+                <div class="field">
+                    <label for="target">Target</label>
+                    <select id="target">
+                        <option value="_blank">_blank — nueva pestaña</option>
+                        <option value="_self">_self — misma pestaña</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="color">Color</label>
+
+                    <div class="color-row">
+                        <input id="colorPicker" type="color" value="#007aff">
+                        <input id="color" value="#007aff">
+                    </div>
+                </div>
+
+            </div>
+
+            <div style="display:flex;gap:8px;margin-top:18px;">
+                <button class="btn primary" id="saveBtn" style="flex:1">
+                    Guardar cambios
+                </button>
+
+                <button class="btn danger" id="deleteBtn">
+                    Eliminar
+                </button>
+            </div>
+
+        </div>
+
+        <div class="editor-list" id="editorList"></div>
+
+    </section>
+
+    <section class="preview-panel">
+
+        <div class="preview-top">
+
+            <div class="section-title" style="margin:0">
+                <div>
+                    <h2>Preview</h2>
+                    <span>Así se verá el recurso en tu app</span>
+                </div>
+            </div>
+
+            <div class="preview-switch">
+                <button class="active" data-view="cards">Tarjetas</button>
+                <button data-view="compact">Compacto</button>
+            </div>
+
+        </div>
+
+        <div id="preview"></div>
+
+        <div class="code-panel">
+            <div class="code-header">
+                <span>JavaScript generado</span>
+                <button class="btn small" id="copyBtn">Copiar código</button>
+            </div>
+
+            <pre id="code"></pre>
+        </div>
+
+    </section>
+
+</main>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-backdrop" id="importModal">
+
+    <div class="modal">
+
+        <div class="modal-header">
+            <strong>Importar PRESET_BOOKS</strong>
+            <button class="icon-btn" id="closeImport">×</button>
+        </div>
+
+        <div class="modal-body">
+            <p style="color:var(--muted);font-size:13px;margin-top:0">
+                Pega aquí tu array completo. Se aceptan tanto
+                <code>const PRESET_BOOKS = [...]</code> como solamente
+                <code>[...]</code>.
+            </p>
+
+            <textarea id="importInput" spellcheck="false"></textarea>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn" id="cancelImport">Cancelar</button>
+            <button class="btn primary" id="doImport">Importar</button>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+const STORAGE_KEY = "preset-books-editor";
+
+const DEFAULT_BOOKS = [
+    {
+        id: "ebiblio",
+        title: "eBiblio",
+        url: "https://ebiblio.es",
+        logo: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80",
+        description: "Servicio de préstamo de libros electrónicos de las bibliotecas públicas.",
+        tags: ["Libros", "Oficial"],
+        target: "_blank",
+        color: "#ff453a"
+    },
+    {
+        id: "cervantes",
+        title: "Biblioteca Cervantes",
+        url: "http://www.cervantesvirtual.com",
+        logo: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=400&auto=format&fit=crop&q=80",
+        description: "Gran catálogo de obras en español de acceso libre.",
+        tags: ["Clásicos", "Historia"],
+        target: "_blank",
+        color: "#007aff"
+    },
+    {
+        id: "gutenberg",
+        title: "Project Gutenberg",
+        url: "https://www.gutenberg.org",
+        logo: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&auto=format&fit=crop&q=80",
+        description: "Más de 60.000 libros electrónicos gratuitos.",
+        tags: ["Dominio Público"],
+        target: "_blank",
+        color: "#34c759"
+    },
+    {
+        id: "openlibrary",
+        title: "Open Library",
+        url: "https://openlibrary.org",
+        logo: "https://images.unsplash.com/photo-1495440153383-a447c23175c2?w=400&auto=format&fit=crop&q=80",
+        description: "Catálogo abierto y biblioteca editable de libros.",
+        tags: ["Internacional"],
+        target: "_blank",
+        color: "#af52de"
+    }
+];
+
+let books = loadBooks();
+let selectedIndex = books.length ? 0 : -1;
+let currentTags = [];
+let previewMode = "cards";
+
+const $ = id => document.getElementById(id);
+
+function loadBooks() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed)) return parsed;
+        }
+    } catch {}
+
+    return structuredClone(DEFAULT_BOOKS);
+}
+
+function persist() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(books));
+}
+
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function escapeJS(value) {
+    return String(value ?? "")
+        .replaceAll("\\", "\\\\")
+        .replaceAll("'", "\\'");
+}
+
+function render() {
+    renderEditorList();
+    renderForm();
+    renderPreview();
+    renderCode();
+
+    $("bookCounter").textContent =
+        `${books.length} ${books.length === 1 ? "libro" : "libros"}`;
+}
+
+function renderEditorList() {
+
+    const container = $("editorList");
+
+    if (!books.length) {
+        container.innerHTML = "";
+        return;
+    }
+
+    container.innerHTML = books.map((book, index) => `
+        <div class="item ${index === selectedIndex ? "active" : ""}"
+             onclick="selectBook(${index})">
+
+            <div class="item-thumb">
+                <img
+                    src="${escapeHTML(book.logoSquare || book.logo)}"
+                    onerror="this.style.display='none'"
+                    alt=""
+                >
+            </div>
+
+            <div class="item-info">
+                <div class="item-title">${escapeHTML(book.title)}</div>
+                <div class="item-id">${escapeHTML(book.id)}</div>
+            </div>
+
+            <div class="item-actions">
+
+                <button onclick="moveBook(event, ${index}, -1)"
+                        title="Subir">↑</button>
+
+                <button onclick="moveBook(event, ${index}, 1)"
+                        title="Bajar">↓</button>
+
+                <button onclick="duplicateBook(event, ${index})"
+                        title="Duplicar">＋</button>
+
+            </div>
+        </div>
+    `).join("");
+}
+
+function renderForm() {
+
+    if (selectedIndex < 0) {
+        clearForm();
+        return;
+    }
+
+    const book = books[selectedIndex];
+
+    $("editorTitle").textContent =
+        book.title ? `Editando · ${book.title}` : "Editar libro";
+
+    $("id").value = book.id || "";
+    $("title").value = book.title || "";
+    $("url").value = book.url || "";
+    $("logo").value = book.logo || "";
+    $("logoSquare").value = book.logoSquare || "";
+    $("description").value = book.description || "";
+    $("target").value = book.target || "_blank";
+    $("color").value = book.color || "#007aff";
+    $("colorPicker").value = normalizeColor(book.color);
+
+    currentTags = Array.isArray(book.tags) ? [...book.tags] : [];
+
+    renderTags();
+}
+
+function clearForm() {
+
+    $("editorTitle").textContent = "Nuevo libro";
+
+    ["id", "title", "url", "logo", "logoSquare", "description"].forEach(id => {
+        $(id).value = "";
+    });
+
+    $("target").value = "_blank";
+    $("color").value = "#007aff";
+    $("colorPicker").value = "#007aff";
+
+    currentTags = [];
+    renderTags();
+}
+
+function renderTags() {
+
+    const input = $("tagInput");
+
+    $("tagsEditor").innerHTML =
+        currentTags.map((tag, index) => `
+            <span class="tag">
+                ${escapeHTML(tag)}
+                <button onclick="removeTag(${index})">×</button>
+            </span>
+        `).join("") + input.outerHTML;
+
+    const newInput = $("tagInput");
+
+    newInput.addEventListener("keydown", event => {
+
+        if (event.key === "Enter" || event.key === ",") {
+            event.preventDefault();
+
+            const value = newInput.value.trim();
+
+            if (value && !currentTags.includes(value)) {
+                currentTags.push(value);
+                renderTags();
+            }
+        }
+    });
+}
+
+function renderPreview() {
+
+    const container = $("preview");
+
+    if (!books.length) {
+        container.innerHTML = `
+            <div class="empty">
+                <div>
+                    <strong>No hay libros todavía</strong>
+                    Pulsa «Añadir libro» para comenzar.
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    if (previewMode === "compact") {
+
+        container.innerHTML = `
+            <div style="
+                display:grid;
+                gap:8px;
+                max-width:650px;
+            ">
+                ${books.map(book => `
+                    <div style="
+                        display:flex;
+                        align-items:center;
+                        gap:12px;
+                        padding:10px;
+                        border:1px solid var(--border);
+                        border-radius:14px;
+                        background:var(--surface);
+                    ">
+                        <img
+                            src="${escapeHTML(book.logoSquare || book.logo)}"
+                            style="
+                                width:46px;
+                                height:46px;
+                                border-radius:11px;
+                                object-fit:cover;
+                            "
+                            onerror="this.style.display='none'"
+                        >
+
+                        <div style="min-width:0;flex:1">
+                            <div style="font-size:14px;font-weight:600">
+                                ${escapeHTML(book.title)}
+                            </div>
+
+                            <div style="
+                                color:var(--muted);
+                                font-size:11px;
+                                white-space:nowrap;
+                                overflow:hidden;
+                                text-overflow:ellipsis;
+                            ">
+                                ${escapeHTML(book.url)}
+                            </div>
+                        </div>
+
+                        <span style="
+                            width:8px;
+                            height:8px;
+                            border-radius:50%;
+                            background:${escapeHTML(book.color)};
+                        "></span>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="books-grid">
+            ${books.map(book => `
+                <article class="book-card">
+
+                    <div class="book-cover">
+                        <img
+                            src="${escapeHTML(book.logo || book.logoSquare)}"
+                            alt=""
+                            onerror="this.style.opacity='.15'"
+                        >
+                    </div>
+
+                    <div class="book-content">
+
+                        <div class="book-logo">
+                            <img
+                                src="${escapeHTML(book.logoSquare || book.logo)}"
+                                alt=""
+                                onerror="this.style.opacity='.15'"
+                            >
+                        </div>
+
+                        <div class="book-title">
+                            ${escapeHTML(book.title)}
+                        </div>
+
+                        <div class="book-description">
+                            ${escapeHTML(book.description)}
+                        </div>
+
+                        <div class="book-tags">
+                            ${(book.tags || []).map(tag => `
+                                <span class="book-tag">
+                                    ${escapeHTML(tag)}
+                                </span>
+                            `).join("")}
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="book-accent"
+                        style="background:${escapeHTML(book.color)}"
+                    ></div>
+
+                </article>
+            `).join("")}
+        </div>
+    `;
+}
+
+function renderCode() {
+
+    const output =
+`const PRESET_BOOKS = [
+${books.map(book => `    {
+        id: '${escapeJS(book.id)}',
+        title: '${escapeJS(book.title)}',
+        url: '${escapeJS(book.url)}',
+        logo: '${escapeJS(book.logo)}',
+        logoSquare: '${escapeJS(book.logoSquare)}',
+        description: '${escapeJS(book.description)}',
+        tags: [${(book.tags || []).map(tag => `'${escapeJS(tag)}'`).join(", ")}],
+        target: '${escapeJS(book.target)}',
+        color: '${escapeJS(book.color)}'
+    }`).join(",\n")}
+];`;
+
+    $("code").textContent = output;
+}
+
+function normalizeColor(color) {
+
+    if (/^#[0-9a-f]{6}$/i.test(color || "")) {
+        return color;
+    }
+
+    return "#007aff";
+}
+
+function selectBook(index) {
+    selectedIndex = index;
+    render();
+}
+
+function saveCurrent() {
+
+    const id = $("id").value.trim();
+    const title = $("title").value.trim();
+    const url = $("url").value.trim();
+    const logo = $("logo").value.trim();
+    const logoSquare = $("logoSquare").value.trim();
+    const description = $("description").value.trim();
+    const target = $("target").value;
+    const color = $("color").value.trim();
+
+    if (!id || !title || !url) {
+        showToast("ID, título y URL son obligatorios");
+        return;
+    }
+
+    const duplicate = books.findIndex(
+        (book, index) => book.id === id && index !== selectedIndex
+    );
+
+    if (duplicate !== -1) {
+        showToast("Ya existe otro libro con ese ID");
+        return;
+    }
+
+    const book = {
+        id,
+        title,
+        url,
+        logo,
+        logoSquare,
+        description,
+        tags: [...currentTags],
+        target,
+        color: normalizeColor(color)
+    };
+
+    if (selectedIndex === -1) {
+        books.push(book);
+        selectedIndex = books.length - 1;
+    } else {
+        books[selectedIndex] = book;
+    }
+
+    persist();
+    render();
+
+    showToast("Cambios guardados");
+}
+
+function addBook() {
+
+    books.push({
+        id: "nuevo-recurso",
+        title: "Nuevo recurso",
+        url: "https://",
+        logo: "",
+        logoSquare: "",
+        description: "Descripción del recurso.",
+        tags: [],
+        target: "_blank",
+        color: "#007aff"
+    });
+
+    selectedIndex = books.length - 1;
+
+    persist();
+    render();
+
+    $("id").focus();
+}
+
+function deleteBook() {
+
+    if (selectedIndex < 0) return;
+
+    const title = books[selectedIndex].title || "este libro";
+
+    if (!confirm(`¿Eliminar "${title}"?`)) return;
+
+    books.splice(selectedIndex, 1);
+
+    selectedIndex = Math.min(
+        selectedIndex,
+        books.length - 1
+    );
+
+    persist();
+    render();
+
+    showToast("Libro eliminado");
+}
+
+function duplicateBook(event, index) {
+
+    event.stopPropagation();
+
+    const copy = structuredClone(books[index]);
+
+    copy.id = `${copy.id}-copia`;
+    copy.title = `${copy.title} (copia)`;
+
+    books.splice(index + 1, 0, copy);
+
+    selectedIndex = index + 1;
+
+    persist();
+    render();
+
+    showToast("Libro duplicado");
+}
+
+function moveBook(event, index, direction) {
+
+    event.stopPropagation();
+
+    const newIndex = index + direction;
+
+    if (newIndex < 0 || newIndex >= books.length) return;
+
+    [books[index], books[newIndex]] =
+        [books[newIndex], books[index]];
+
+    selectedIndex = newIndex;
+
+    persist();
+    render();
+}
+
+function removeTag(index) {
+    currentTags.splice(index, 1);
+    renderTags();
+}
+
+function showToast(message) {
+
+    const toast = $("toast");
+
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    clearTimeout(showToast.timeout);
+
+    showToast.timeout = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2200);
+}
+
+/* COLOR */
+
+$("colorPicker").addEventListener("input", event => {
+    $("color").value = event.target.value;
+});
+
+$("color").addEventListener("input", event => {
+    const normalized = normalizeColor(event.target.value);
+
+    if (/^#[0-9a-f]{6}$/i.test(event.target.value)) {
+        $("colorPicker").value = normalized;
+    }
+});
+
+/* TAGS */
+
+$("tagInput").addEventListener("keydown", event => {
+
+    if (event.key === "Enter" || event.key === ",") {
+
+        event.preventDefault();
+
+        const value = event.target.value.trim();
+
+        if (value && !currentTags.includes(value)) {
+            currentTags.push(value);
+            renderTags();
+        }
+    }
+});
+
+/* ACTIONS */
+
+$("addBtn").addEventListener("click", addBook);
+$("saveBtn").addEventListener("click", saveCurrent);
+$("deleteBtn").addEventListener("click", deleteBook);
+
+$("copyBtn").addEventListener("click", async () => {
+
+    try {
+        await navigator.clipboard.writeText($("code").textContent);
+        showToast("Código copiado");
+    } catch {
+        showToast("No se pudo copiar");
+    }
+});
+
+$("exportBtn").addEventListener("click", () => {
+
+    const blob = new Blob(
+        [$("code").textContent],
+        { type: "text/javascript;charset=utf-8" }
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "preset-books.js";
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+    showToast("Archivo exportado");
+});
+
+/* IMPORT */
+
+$("importBtn").addEventListener("click", () => {
+    $("importModal").classList.add("open");
+    $("importInput").focus();
+});
+
+$("closeImport").addEventListener("click", closeImport);
+$("cancelImport").addEventListener("click", closeImport);
+
+function closeImport() {
+    $("importModal").classList.remove("open");
+}
+
+$("doImport").addEventListener("click", () => {
+
+    const raw = $("importInput").value.trim();
+
+    if (!raw) {
+        showToast("Pega primero el código");
+        return;
+    }
+
+    try {
+
+        let source = raw
+            .replace(/^\s*const\s+PRESET_BOOKS\s*=\s*/, "")
+            .replace(/;\s*$/, "")
+            .trim();
+
+        /*
+         * El formato que esperamos es un array de objetos JavaScript.
+         * Se usa Function únicamente para interpretar el formato local
+         * que genera este editor.
+         */
+        const imported = Function(
+            `"use strict"; return (${source});`
+        )();
+
+        if (!Array.isArray(imported)) {
+            throw new Error("No es un array");
+        }
+
+        if (
+            imported.some(book =>
+                !book ||
+                typeof book !== "object" ||
+                typeof book.id !== "string" ||
+                typeof book.title !== "string"
+            )
+        ) {
+            throw new Error("Formato incorrecto");
+        }
+
+        books = imported.map(book => ({
+            id: book.id || "",
+            title: book.title || "",
+            url: book.url || "",
+            logo: book.logo || "",
+            logoSquare: book.logoSquare || "",
+            description: book.description || "",
+            tags: Array.isArray(book.tags) ? book.tags : [],
+            target: book.target || "_blank",
+            color: normalizeColor(book.color)
+        }));
+
+        selectedIndex = books.length ? 0 : -1;
+
+        persist();
+        render();
+        closeImport();
+
+        $("importInput").value = "";
+
+        showToast(`${books.length} libros importados`);
+
+    } catch (error) {
+
+        console.error(error);
+        showToast("No se pudo interpretar el formato");
+    }
+});
+
+/* PREVIEW MODE */
+
+document.querySelectorAll(".preview-switch button").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        document
+            .querySelectorAll(".preview-switch button")
+            .forEach(b => b.classList.remove("active"));
+
+        button.classList.add("active");
+
+        previewMode = button.dataset.view;
+
+        renderPreview();
+    });
+});
+
+/* KEYBOARD */
+
+document.addEventListener("keydown", event => {
+
+    if (
+        (event.ctrlKey || event.metaKey) &&
+        event.key.toLowerCase() === "s"
+    ) {
+        event.preventDefault();
+        saveCurrent();
+    }
+
+    if (
+        (event.ctrlKey || event.metaKey) &&
+        event.key.toLowerCase() === "e"
+    ) {
+        event.preventDefault();
+        $("exportBtn").click();
+    }
+});
+
+/* START */
+
+render();
+</script>
+
+</body>
+</html>

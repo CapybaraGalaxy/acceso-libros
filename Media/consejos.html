@@ -1,0 +1,2612 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <!--
+        Sincronización visual con Acceso Libros.
+        El index.html guarda el estado en "school_library_data".
+    -->
+    <script>
+        (() => {
+            try {
+                const saved = JSON.parse(localStorage.getItem("school_library_data") || "null");
+                const theme = saved?.theme ||
+                    (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+
+                document.documentElement.dataset.theme = theme;
+
+                if (saved?.accent) {
+                    document.documentElement.style.setProperty("--accent", saved.accent);
+                }
+            } catch (_) {
+                document.documentElement.dataset.theme =
+                    matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+            }
+        })();
+    </script>
+
+    <title>Consejos · Acceso Libros</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --bg: #000000;
+            --surface: #121212;
+            --surface-hover: #1c1c1e;
+
+            --border: rgba(255, 255, 255, 0.08);
+            --border-strong: rgba(255, 255, 255, 0.14);
+
+            --text-main: #ffffff;
+            --text-muted: #8e8e93;
+            --text-body: #d1d1d6;
+
+            --accent: #ff453a;
+            --accent-danger: #ff453a;
+            --accent-success: #34c759;
+
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+
+            --bezier: cubic-bezier(0.16, 1, 0.3, 1);
+            --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+            --blur: 30px;
+        }
+
+        [data-theme="light"] {
+            --bg: #f2f2f7;
+            --surface: #ffffff;
+            --surface-hover: #e5e5ea;
+
+            --border: rgba(0, 0, 0, 0.08);
+            --border-strong: rgba(0, 0, 0, 0.14);
+
+            --text-main: #000000;
+            --text-muted: #6c6c70;
+            --text-body: #3a3a3c;
+
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            font-variant-numeric: tabular-nums;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            background: var(--bg);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            min-height: 100dvh;
+            overflow-x: hidden;
+            transition:
+                background-color 0.4s var(--bezier),
+                color 0.4s var(--bezier);
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* =========================
+           CONTENEDOR PRINCIPAL
+           ========================= */
+
+        .app-container {
+            width: 100%;
+            max-width: 960px;
+            min-height: 100dvh;
+            margin: 0 auto;
+
+            padding:
+                env(safe-area-inset-top)
+                24px
+                calc(env(safe-area-inset-bottom) + 20px)
+                24px;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* =========================
+           CABECERA
+           ========================= */
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 16px;
+            padding: 16px 0;
+
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+        }
+
+        .app-icon-badge {
+            width: 48px;
+            height: 48px;
+            flex: 0 0 48px;
+
+            border-radius: 15px;
+
+            background:
+                radial-gradient(
+                    circle at top left,
+                    var(--surface-hover),
+                    var(--surface)
+                );
+
+            border: 1px solid var(--border);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            box-shadow: var(--shadow);
+
+            color: var(--accent);
+
+            transition:
+                transform 0.3s var(--spring),
+                border-color 0.25s var(--bezier);
+        }
+
+        .app-icon-badge:hover {
+            transform: scale(1.05) rotate(-3deg);
+            border-color: var(--accent);
+        }
+
+        .app-title-group {
+            min-width: 0;
+        }
+
+        .app-title-group h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+        }
+
+        .app-title-group span {
+            display: block;
+            margin-top: 2px;
+
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .icon-btn {
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 1px solid var(--border);
+            border-radius: 13px;
+
+            background: var(--surface);
+            color: var(--text-main);
+
+            cursor: pointer;
+            text-decoration: none;
+
+            box-shadow: var(--shadow);
+
+            transition:
+                background 0.2s var(--bezier),
+                border-color 0.2s var(--bezier),
+                color 0.2s var(--bezier),
+                transform 0.2s var(--spring);
+        }
+
+        .icon-btn:hover {
+            background: var(--surface-hover);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .icon-btn:active {
+            transform: scale(0.92);
+        }
+
+        .back-home-btn {
+            padding: 0 14px;
+
+            width: auto;
+            gap: 7px;
+
+            font-size: 0.84rem;
+            font-weight: 600;
+        }
+
+        /* =========================
+           BUSCADOR
+           ========================= */
+
+        .search-container {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .search-input {
+            width: 100%;
+
+            padding: 13px 16px 13px 44px;
+
+            background: var(--surface);
+            color: var(--text-main);
+
+            border: 1px solid var(--border);
+            border-radius: 15px;
+
+            outline: none;
+
+            font-size: 0.94rem;
+
+            box-shadow: var(--shadow);
+
+            transition:
+                background 0.2s var(--bezier),
+                border-color 0.2s var(--bezier),
+                transform 0.2s var(--bezier);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-input:focus {
+            background: var(--surface-hover);
+            border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+            transform: scale(1.005);
+        }
+
+        .search-icon {
+            position: absolute;
+
+            left: 15px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: var(--text-muted);
+            pointer-events: none;
+
+            transition: color 0.2s ease;
+        }
+
+        .search-input:focus ~ .search-icon {
+            color: var(--accent);
+        }
+
+        /* =========================
+           CATEGORÍAS
+           ========================= */
+
+        .categories-scroll {
+            display: flex;
+            align-items: center;
+
+            gap: 8px;
+
+            overflow-x: auto;
+
+            padding: 4px 0 14px;
+
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .categories-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-pill {
+            flex: 0 0 auto;
+
+            padding: 8px 15px;
+
+            border: 1px solid var(--border);
+            border-radius: 100px;
+
+            background: var(--surface);
+            color: var(--text-muted);
+
+            font-size: 0.82rem;
+            font-weight: 500;
+
+            cursor: pointer;
+            user-select: none;
+
+            transition:
+                background 0.25s var(--bezier),
+                color 0.25s var(--bezier),
+                border-color 0.25s var(--bezier),
+                transform 0.25s var(--spring);
+        }
+
+        .category-pill:hover {
+            background: var(--surface-hover);
+            color: var(--text-main);
+        }
+
+        .category-pill.active {
+            background: var(--text-main);
+            color: var(--bg);
+            border-color: var(--text-main);
+            transform: scale(1.03);
+        }
+
+        /* =========================
+           LISTADO
+           ========================= */
+
+        .main-content {
+            display: grid;
+
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+
+            gap: 16px;
+
+            align-content: start;
+
+            padding-bottom: 24px;
+
+            transition: opacity 0.15s ease;
+        }
+
+        .main-content.fade-out {
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .article-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+
+            border-radius: 19px;
+
+            padding: 20px;
+
+            min-height: 195px;
+
+            display: flex;
+            flex-direction: column;
+
+            cursor: pointer;
+
+            animation: fadeInUp 0.42s var(--bezier) backwards;
+
+            box-shadow: var(--shadow);
+
+            transition:
+                transform 0.25s var(--bezier),
+                background 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.25s ease;
+        }
+
+        .article-card:hover {
+            background: var(--surface-hover);
+            border-color: var(--border-strong);
+
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 14px 35px rgba(0, 0, 0, 0.18);
+        }
+
+        .article-card:active {
+            transform: scale(0.985);
+        }
+
+        .article-card-body {
+            display: flex;
+            flex-direction: column;
+
+            gap: 11px;
+
+            height: 100%;
+        }
+
+        .article-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 10px;
+        }
+
+        .article-badge {
+            display: inline-flex;
+            align-items: center;
+
+            width: fit-content;
+
+            padding: 4px 8px;
+
+            border-radius: 7px;
+
+            background: color-mix(
+                in srgb,
+                var(--accent) 10%,
+                var(--surface)
+            );
+
+            border: 1px solid color-mix(
+                in srgb,
+                var(--accent) 20%,
+                var(--border)
+            );
+
+            color: var(--accent);
+
+            font-size: 0.7rem;
+            font-weight: 600;
+
+            text-transform: uppercase;
+            letter-spacing: 0.055em;
+        }
+
+        .article-time {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            white-space: nowrap;
+        }
+
+        .article-card h3 {
+            color: var(--text-main);
+
+            font-size: 1.08rem;
+            font-weight: 650;
+
+            line-height: 1.28;
+            letter-spacing: -0.015em;
+        }
+
+        .article-card p {
+            color: var(--text-muted);
+
+            font-size: 0.87rem;
+            line-height: 1.48;
+
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+
+            overflow: hidden;
+        }
+
+        .article-card-footer {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            margin-top: auto;
+            padding-top: 8px;
+
+            color: var(--text-muted);
+
+            font-size: 0.74rem;
+        }
+
+        .article-card-footer i {
+            color: var(--accent);
+        }
+
+        /* =========================
+           ESTADO VACÍO
+           ========================= */
+
+        .empty-state {
+            grid-column: span 2;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 300px;
+
+            padding: 50px 20px;
+
+            text-align: center;
+
+            color: var(--text-muted);
+
+            gap: 13px;
+        }
+
+        .empty-state i {
+            opacity: 0.45;
+        }
+
+        .empty-state strong {
+            color: var(--text-main);
+            font-size: 1rem;
+        }
+
+        .empty-state span {
+            max-width: 340px;
+            font-size: 0.86rem;
+            line-height: 1.5;
+        }
+
+        /* =========================
+           PROGRESO DE LECTURA
+           ========================= */
+
+        .reading-progress-container {
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 3px;
+
+            background: transparent;
+
+            z-index: 1001;
+        }
+
+        .reading-progress-bar {
+            width: 0%;
+            height: 100%;
+
+            background: var(--accent);
+
+            box-shadow: 0 0 10px color-mix(
+                in srgb,
+                var(--accent) 50%,
+                transparent
+            );
+
+            transition: width 0.1s linear;
+        }
+
+        /* =========================
+           LECTOR
+           ========================= */
+
+        .reader-modal {
+            position: fixed;
+
+            inset: 0;
+
+            width: 100vw;
+            height: 100dvh;
+
+            background: var(--bg);
+
+            z-index: 1000;
+
+            display: flex;
+            flex-direction: column;
+
+            opacity: 0;
+            transform: scale(0.985) translateY(10px);
+
+            pointer-events: none;
+
+            transition:
+                opacity 0.3s var(--bezier),
+                transform 0.3s var(--bezier);
+        }
+
+        .reader-modal.active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+
+        .reader-header {
+            width: 100%;
+            max-width: 960px;
+
+            margin: 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 12px;
+
+            padding:
+                calc(env(safe-area-inset-top) + 16px)
+                24px
+                14px;
+
+            border-bottom: 1px solid var(--border);
+
+            background: color-mix(
+                in srgb,
+                var(--bg) 86%,
+                transparent
+            );
+
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
+        }
+
+        .reader-body-container {
+            flex: 1;
+
+            overflow-y: auto;
+
+            padding:
+                34px
+                24px
+                calc(env(safe-area-inset-bottom) + 70px);
+
+            scroll-behavior: smooth;
+        }
+
+        .reader-content {
+            width: 100%;
+            max-width: 720px;
+
+            margin: 0 auto;
+
+            display: flex;
+            flex-direction: column;
+
+            gap: 20px;
+        }
+
+        .reader-content h2 {
+            color: var(--text-main);
+
+            font-size: clamp(1.8rem, 4vw, 2.4rem);
+
+            line-height: 1.16;
+
+            letter-spacing: -0.025em;
+
+            font-weight: 700;
+        }
+
+        .reader-meta-info {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+
+            gap: 9px;
+
+            padding-bottom: 17px;
+
+            border-bottom: 1px solid var(--border);
+
+            color: var(--text-muted);
+
+            font-size: 0.8rem;
+        }
+
+        .reader-meta-info span {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .reader-meta-info i {
+            color: var(--accent);
+        }
+
+        .article-body {
+            display: flex;
+            flex-direction: column;
+
+            gap: 17px;
+
+            color: var(--text-body);
+
+            font-size: 1.03rem;
+            line-height: 1.7;
+        }
+
+        .article-body p {
+            margin: 0;
+        }
+
+        .article-body h3 {
+            margin-top: 13px;
+
+            color: var(--text-main);
+
+            font-size: 1.3rem;
+            line-height: 1.25;
+
+            font-weight: 650;
+        }
+
+        .article-body h4 {
+            margin-top: 8px;
+
+            color: var(--text-main);
+
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+
+        .article-body strong {
+            color: var(--text-main);
+            font-weight: 650;
+        }
+
+        .article-body a {
+            color: var(--accent);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        .article-body hr {
+            width: 100%;
+
+            margin: 8px 0;
+
+            border: none;
+            border-top: 1px solid var(--border);
+        }
+
+        .article-body ul,
+        .article-body ol {
+            padding-left: 22px;
+        }
+
+        .article-body li {
+            padding-left: 4px;
+        }
+
+        .article-body li + li {
+            margin-top: 8px;
+        }
+
+        .tip-box {
+            padding: 15px 17px;
+
+            border-radius: 15px;
+
+            background: color-mix(
+                in srgb,
+                var(--accent) 8%,
+                var(--surface)
+            );
+
+            border: 1px solid color-mix(
+                in srgb,
+                var(--accent) 20%,
+                var(--border)
+            );
+
+            color: var(--text-body);
+        }
+
+        .tip-box strong {
+            color: var(--accent);
+        }
+
+        .warning-box {
+            padding: 15px 17px;
+
+            border-radius: 15px;
+
+            background: rgba(255, 69, 58, 0.08);
+
+            border: 1px solid rgba(255, 69, 58, 0.22);
+        }
+
+        .future-image-slot {
+            /*
+                Espacio reservado para futuras capturas.
+                De momento no se muestran imágenes.
+            */
+
+            display: none;
+
+            width: 100%;
+            min-height: 180px;
+
+            align-items: center;
+            justify-content: center;
+
+            border: 1px dashed var(--border-strong);
+            border-radius: 15px;
+
+            color: var(--text-muted);
+
+            font-size: 0.82rem;
+        }
+
+        /*
+        Ejemplo futuro:
+
+        <div class="future-image-slot">
+            <img src="..." alt="...">
+        </div>
+        */
+
+        kbd {
+            display: inline-block;
+
+            padding: 2px 7px;
+
+            margin: 0 2px;
+
+            border-radius: 6px;
+
+            background: var(--surface-hover);
+
+            border: 1px solid var(--border-strong);
+
+            border-bottom-width: 2px;
+
+            color: var(--text-main);
+
+            font-family: 'Outfit', sans-serif;
+
+            font-size: 0.82em;
+
+            line-height: 1.3;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+
+            gap: 10px;
+
+            margin: 4px 0;
+        }
+
+        .feature-card {
+            padding: 15px;
+
+            border-radius: 15px;
+
+            background: var(--surface);
+
+            border: 1px solid var(--border);
+        }
+
+        .feature-card i {
+            color: var(--accent);
+            margin-bottom: 9px;
+        }
+
+        .feature-card strong {
+            display: block;
+
+            margin-bottom: 5px;
+
+            font-size: 0.92rem;
+        }
+
+        .feature-card span {
+            display: block;
+
+            color: var(--text-muted);
+
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        /* =========================
+           RESPONSIVE
+           ========================= */
+
+        @media (max-width: 700px) {
+            .app-container {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .empty-state {
+                grid-column: span 1;
+            }
+
+            .reader-header {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .reader-body-container {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .back-home-btn span {
+                display: none;
+            }
+
+            .back-home-btn {
+                width: 42px;
+                padding: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-icon-badge {
+                width: 44px;
+                height: 44px;
+                flex-basis: 44px;
+                border-radius: 13px;
+            }
+
+            .app-title-group h1 {
+                font-size: 1.02rem;
+            }
+
+            .app-title-group span {
+                font-size: 0.72rem;
+            }
+
+            .header-actions {
+                gap: 6px;
+            }
+
+            .icon-btn {
+                width: 40px;
+                height: 40px;
+            }
+
+            .article-card {
+                min-height: 180px;
+            }
+
+            .article-body {
+                font-size: 0.98rem;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="reading-progress-container">
+        <div class="reading-progress-bar" id="reading-progress-bar"></div>
+    </div>
+
+    <!-- =========================
+         VISTA PRINCIPAL
+         ========================= -->
+
+    <div class="app-container" id="main-view">
+
+        <header>
+            <div class="header-left">
+
+                <div class="app-icon-badge" aria-hidden="true">
+                    <i data-lucide="lightbulb" size="21"></i>
+                </div>
+
+                <div class="app-title-group">
+                    <h1>Consejos de Acceso Libros</h1>
+                    <span>Guías para aprovechar la biblioteca</span>
+                </div>
+            </div>
+
+            <div class="header-actions">
+
+                <!-- Vuelve directamente a index.html -->
+                <a href="index.html"
+                    class="icon-btn back-home-btn"
+                    title="Volver a Acceso Libros"
+                    aria-label="Volver a Acceso Libros">
+                    <i data-lucide="arrow-left" size="18"></i>
+                    <span>Volver</span>
+                </a>
+
+                <!-- Cambia el tema sin modificar la configuración de index.html -->
+                <button
+                    class="icon-btn"
+                    id="theme-toggle-btn"
+                    title="Cambiar tema"
+                    aria-label="Cambiar tema">
+                    <i data-lucide="sun-moon" size="18"></i>
+                </button>
+
+            </div>
+        </header>
+
+        <div class="search-container">
+
+            <input
+                type="text"
+                class="search-input"
+                id="search-input"
+                autocomplete="off"
+                placeholder="Buscar guías, compartir, URLs, ajustes...">
+
+            <i data-lucide="search" size="18" class="search-icon"></i>
+
+        </div>
+
+        <div class="categories-scroll" id="categories-container"></div>
+
+        <main class="main-content" id="articles-list"></main>
+
+    </div>
+
+
+    <!-- =========================
+         LECTOR DE ARTÍCULOS
+         ========================= -->
+
+    <div class="reader-modal" id="reader-modal">
+
+        <div class="reader-header">
+
+            <button class="icon-btn" onclick="closeArticleModal()" aria-label="Volver">
+                <i data-lucide="arrow-left" size="18"></i>
+            </button>
+
+            <div id="modal-category-badge" class="article-badge">
+                Guía
+            </div>
+
+        </div>
+
+        <div class="reader-body-container" id="reader-body-container">
+            <div class="reader-content" id="reader-content-inner"></div>
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /* ============================================================
+           ARTÍCULOS
+           ============================================================ */
+
+        const DEFAULT_ARTICLES = [
+
+            {
+                id: 'lib-01',
+
+                title: 'Cómo funciona Acceso Libros',
+
+                category: 'Primeros pasos',
+
+                summary:
+                    'Conoce la idea de la aplicación y cómo organizar tus accesos a recursos educativos en un único lugar.',
+
+                date: '5 Oct 2026',
+
+                content: `
+
+                    <p>
+                        <strong>Acceso Libros</strong> funciona como una biblioteca personal de accesos:
+                        en lugar de obligarte a recordar dónde está cada recurso educativo, puedes reunirlos
+                        en una única interfaz.
+                    </p>
+
+                    <p>
+                        Cada tarjeta representa un acceso y puede incluir un nombre, descripción, etiquetas,
+                        icono, color y una URL.
+                    </p>
+
+                    <div class="feature-grid">
+
+                        <div class="feature-card">
+                            <i data-lucide="layout-grid" size="19"></i>
+                            <strong>Varias vistas</strong>
+                            <span>Organiza los accesos en cuadrícula, lista o vista compacta.</span>
+                        </div>
+
+                        <div class="feature-card">
+                            <i data-lucide="star" size="19"></i>
+                            <strong>Favoritos</strong>
+                            <span>Marca los recursos que utilizas con mayor frecuencia.</span>
+                        </div>
+
+                        <div class="feature-card">
+                            <i data-lucide="pin" size="19"></i>
+                            <strong>Fijados</strong>
+                            <span>Mantén determinados accesos en una posición prioritaria.</span>
+                        </div>
+
+                        <div class="feature-card">
+                            <i data-lucide="tags" size="19"></i>
+                            <strong>Etiquetas</strong>
+                            <span>Añade contexto para localizar recursos posteriormente.</span>
+                        </div>
+
+                    </div>
+
+                    <h3>La colección puede cambiar</h3>
+
+                    <p>
+                        La biblioteca no está pensada como un catálogo cerrado. Puedes añadir tus propios
+                        accesos, modificar los existentes y eliminar los que ya no necesites.
+                    </p>
+
+                    <p>
+                        Por eso, las guías de esta sección se centran en <strong>cómo utilizar la aplicación</strong>
+                        y no en recomendar libros concretos que podrían dejar de estar disponibles o cambiar
+                        con el tiempo.
+                    </p>
+
+                    <div class="tip-box">
+                        <strong>Consejo:</strong>
+                        utiliza las etiquetas para describir el tipo de recurso —por ejemplo,
+                        asignatura, etapa educativa o finalidad— en lugar de intentar convertirlas
+                        en un catálogo permanente.
+                    </div>
+
+                    <!-- Espacio reservado para una futura captura:
+                    <div class="future-image-slot">
+                        Captura de la interfaz principal
+                    </div>
+                    -->
+
+                `
+            },
+
+            {
+                id: 'lib-02',
+
+                title: 'Añade y organiza tus propios accesos',
+
+                category: 'Organización',
+
+                summary:
+                    'Crea recursos personalizados y utiliza iconos, colores, etiquetas, favoritos y fijados para mantener la biblioteca ordenada.',
+
+                date: '5 Oct 2026',
+
+                content: `
+
+                    <p>
+                        Una de las partes más importantes de Acceso Libros es que la colección no depende
+                        exclusivamente de los recursos incluidos inicialmente.
+                    </p>
+
+                    <h3>Crea un acceso personalizado</h3>
+
+                    <p>
+                        Desde la opción de añadir recurso puedes definir su <strong>nombre</strong>,
+                        <strong>URL</strong>, descripción, etiquetas e identidad visual.
+                    </p>
+
+                    <p>
+                        El icono puede configurarse mediante una imagen, emoji, icono de Lucide o favicon
+                        asociado a la página.
+                    </p>
+
+                    <h3>Utiliza las etiquetas con criterio</h3>
+
+                    <p>
+                        Las etiquetas sirven para añadir información que te ayude a encontrar y distinguir
+                        recursos. Puedes utilizarlas para materias, cursos, tipos de contenido o cualquier
+                        otra clasificación que te resulte útil.
+                    </p>
+
+                    <h3>Favoritos y fijados no son lo mismo</h3>
+
+                    <p>
+                        Los <strong>favoritos</strong> identifican accesos que quieres considerar
+                        especialmente importantes. Los elementos <strong>fijados</strong> están pensados
+                        para mantener recursos concretos arriba de la colección.
+                    </p>
+
+                    <div class="tip-box">
+                        <strong>Consejo:</strong>
+                        no necesitas crear una estructura perfecta desde el principio. Es mejor empezar
+                        con pocas etiquetas y ajustarlas cuando descubras cómo utilizas realmente la biblioteca.
+                    </div>
+
+                `
+            },
+
+            {
+                id: 'lib-03',
+
+                title: 'Comparte un acceso mediante una URL',
+
+                category: 'Compartir',
+
+                summary:
+                    'Envía un recurso a otra persona sin necesidad de crear una cuenta ni utilizar un servidor para almacenar la colección.',
+
+                date: '5 Oct 2026',
+
+                content: `
+
+                    <p>
+                        Acceso Libros permite compartir accesos mediante enlaces especiales. La idea es que
+                        la información necesaria para reconstruir el acceso pueda viajar dentro de la propia URL.
+                    </p>
+
+                    <h3>¿Qué se comparte?</h3>
+
+                    <p>
+                        Al compartir un acceso, la aplicación puede incluir información como su nombre,
+                        URL, descripción, etiquetas, iconos, color y comportamiento de apertura.
+                    </p>
+
+                    <p>
+                        La página receptora puede interpretar esos datos y ofrecer la posibilidad de
+                        incorporarlos a su propia biblioteca.
+                    </p>
+
+                    <h3>No es un enlace de una base de datos</h3>
+
+                    <p>
+                        Esto es importante: el enlace compartido no depende de que exista una cuenta central
+                        que guarde el recurso. Los datos del acceso se codifican en el fragmento
+                        <kbd>#share=...</kbd> de la URL.
+                    </p>
+
+                    <div class="tip-box">
+                        <strong>En la práctica:</strong>
+                        puedes copiar el enlace y enviarlo por mensajería, correo, redes sociales o cualquier
+                        otro medio que conserve la URL.
+                    </div>
+
+                    <h3>Una limitación importante</h3>
+
+                    <p>
+                        Una URL no tiene espacio infinito. Cuanta más información se incluya en una colección,
+                        más largo será el enlace.
+                    </p>
+
+                    <p>
+                        Por eso, compartir unos pocos accesos funciona mejor que intentar convertir una
+                        biblioteca enorme en una única URL.
+                    </p>
+
+                `
+            },
+
+            {
+                id: 'lib-04',
+
+                title: 'Comparte colecciones completas',
+
+                category: 'Compartir',
+
+                summary:
+                    'Cómo funciona el sistema de colecciones compartidas y qué tener en cuenta antes de enviar un enlace grande.',
+
+                date: '5 Oct 2026',
+
+                content: `
+
+                    <p>
+                        Además de un acceso individual, Acceso Libros puede generar una URL que contiene
+                        una <strong>colección de recursos personalizados</strong>.
+                    </p>
+
+                    <h3>Qué contiene la colección</h3>
+
+                    <p>
+                        El enlace puede contener el nombre de la colección y los datos necesarios de los
+                        recursos incluidos: títulos, URLs, descripciones, etiquetas, iconos, colores y
+                        comportamiento de apertura.
+                    </p>
+
+                    <p>
+                        La aplicación construye esos datos y los codifica dentro del enlace. Al abrirlo,
+                        Acceso Libros puede detectar el fragmento compartido y mostrar una ventana para
+                        revisar los recursos antes de importarlos.
+                    </p>
+
+                    <h3>La persona que recibe el enlace decide</h3>
+
+                    <p>
+                        Recibir una colección no significa que sus recursos se añadan automáticamente.
+                        La interfaz permite revisar el contenido recibido y decidir si se incorpora a
+                        la biblioteca actual.
+                    </p>
+
+                    <div class="warning-box">
+                        <strong>Importante:</strong>
+                        antes de importar recursos compartidos, comprueba que conoces su procedencia.
+                        Un acceso compartido contiene información proporcionada por otra persona.
+                    </div>
+
+                    <h3>Cuándo utilizarlo</h3>
+
+                    <p>
+                        Este sistema es especialmente útil para compartir pequeños grupos de recursos:
+                        por ejemplo, una selección preparada para una asignatura, una clase o un proyecto.
+                    </p>
+
+                    <p>
+                        Para bibliotecas enormes es preferible dividir los recursos en varias colecciones
+                        más pequeñas.
+                    </p>
+
+                `
+            },
+
+            {
+                id: 'lib-05',
+
+                title: 'Crea y comparte tus propias URLs',
+
+                category: 'URLs',
+
+                summary:
+                    'Entiende qué significa una URL propia dentro de Acceso Libros y por qué no necesitas montar un backend para cada recurso.',
+
+                date: '5 Oct 2026',
+
+                content: `
+
+                    <p>
+                        Una de las ventajas del modelo de Acceso Libros es que un recurso puede ser simplemente
+                        una <strong>URL</strong>. La aplicación no necesita alojar el contenido de la página
+                        para poder crear un acceso hacia ella.
+                    </p>
+
+                    <h3>La URL apunta al recurso original</h3>
+
+                    <p>
+                        Si añades un enlace a una plataforma educativa, biblioteca digital o página externa,
+                        Acceso Libros actúa como una capa de organización: guarda los datos del acceso y,
+                        al abrirlo, te lleva a la dirección configurada.
+                    </p>
+
+                    <h3>¿Y las URLs de compartir?</h3>
+
+                    <p>
+                        Son diferentes. La URL del recurso apunta al sitio que quieres visitar, mientras que
+                        una URL de compartir de Acceso Libros contiene datos codificados para que otra
+                        instalación de la aplicación pueda reconstruir el acceso.
+                    </p>
+
+                    <div class="feature-grid">
+
+                        <div class="feature-card">
+                            <i data-lucide="external-link" size="19"></i>
+                            <strong>URL del recurso</strong>
+                            <span>Lleva a la página, plataforma o contenido original.</span>
+                        </div>
+
+                        <div class="feature-card">
+                            <i data-lucide="share-2" size="19"></i>
+                            <strong>URL compartida</strong>
+                            <span>Transporta los datos del acceso o colección.</span>
+                        </div>
+
+                    </div>
+
+                    <h3>Ventaja del sistema</h3>
+
+                    <p>
+                        Puedes crear y compartir accesos sin tener que desarrollar un servicio de cuentas,
+                        una base de datos o un sistema de almacenamiento para cada enlace.
+                    </p>
+
+                    <div class="tip-box">
+                        <strong>Ten presente:</strong>
+                        la URL compartida contiene los datos codificados en el enlace. No es lo mismo que
+                        almacenar información en una nube privada.
+                    </div>
+
+                `
+            },
+
+            {
+                id: 'lib-06',
+
+                title: 'Usa Acceso Libros en varios dispositivos',
+
+                category: 'Multidispositivo',
+
+                summary:
+                    'Qué puedes esperar al utilizar la aplicación desde diferentes ordenadores, tablets y móviles.',
+
+                date: '5 Oct 2026',
+
+                content: `
+
+                    <p>
+                        Acceso Libros está diseñado como una aplicación web, por lo que puedes abrirlo desde
+                        distintos dispositivos compatibles con un navegador moderno.
+                    </p>
+
+                    <h3>La interfaz se adapta</h3>
+
+                    <p>
+                        La interfaz utiliza un diseño responsive para funcionar tanto en pantallas grandes
+                        como en móviles y tablets.
+                    </p>
+
+                    <p>
+                        Puedes cambiar la forma en la que se muestran los accesos para adaptarla al tamaño
+                        de pantalla y a tu forma de utilizar la biblioteca.
+                    </p>
+
+                    <h3>Pero hay una diferencia importante</h3>
+
+                    <p>
+                        <strong>Multidispositivo no significa sincronización automática.</strong>
+                    </p>
+
+                    <p>
+                        La aplicación guarda su configuración y biblioteca localmente en el navegador.
+                        Por tanto, si añades un recurso en un dispositivo, eso no implica que aparezca
+                        automáticamente en otro dispositivo.
+                    </p>
+
+                    <p>
+                        Para mover información entre dispositivos puedes utilizar los mecanismos de
+                        exportación/importación disponibles en la aplicación o compartir recursos mediante
+                        sus URLs.
+                    </p>
+
+                    <div class="warning-box">
+                        <strong>Importante:</strong>
+                        no confundas una aplicación accesible desde varios dispositivos con una cuenta
+                        sincronizada en la nube. Son dos modelos diferentes.
+                    </div>
+
+                    <h3>Entonces, ¿qué ventaja tiene?</h3>
+
+                    <p>
+                        Puedes abrir la misma aplicación desde tu ordenador, tablet o móvil sin instalar
+                        una aplicación específica para cada plataforma y utilizar el dispositivo que
+                        tengas disponible en cada momento.
+                    </p>
+
+                `
+            },
+
+            {
+                id: 'lib-07',
+
+                title: 'Personaliza la apariencia a tu gusto',
+
+                category: 'Personalización',
+
+                summary:
+                    'Cambia tema, color, densidad y forma de visualizar los accesos para adaptar la biblioteca a tu forma de trabajar.',
+
+                date: '5 Oct 2026',
+
+                content: `
+
+                    <p>
+                        Acceso Libros no obliga a utilizar una única configuración visual. El panel de
+                        ajustes permite adaptar diferentes aspectos de la interfaz.
+                    </p>
+
+                    <h3>Modo oscuro y modo claro</h3>
+
+                    <p>
+                        Puedes elegir entre el tema oscuro y el tema claro. La aplicación utiliza el mismo
+                        estado de tema guardado por Acceso Libros, por lo que esta sección de consejos
+                        también puede adaptarse a tu configuración.
+                    </p>
+
+                    <h3>Color de acento</h3>
+
+                    <p>
+                        El color de acento se utiliza para destacar elementos interactivos y partes
+                        importantes de la interfaz.
+                    </p>
+
+                    <h3>Forma de visualizar los accesos</h3>
+
+                    <p>
+                        Puedes utilizar diferentes modos de visualización según lo que priorices:
+                    </p>
+
+                    <ul>
+                        <li><strong>Cuadrícula:</strong> buena para identificar recursos visualmente.</li>
+                        <li><strong>Lista:</strong> útil cuando quieres concentrarte en nombres y descripciones.</li>
+                        <li><strong>Compacta:</strong> permite mostrar muchos accesos en menos espacio.</li>
+                    </ul>
+
+                    <h3>Densidad</h3>
+
+                    <p>
+                        La densidad controla cuánto espacio existe entre las tarjetas y su contenido.
+                        Una configuración compacta muestra más elementos simultáneamente, mientras que
+                        una configuración cómoda proporciona más espacio visual.
+                    </p>
+
+                    <div class="tip-box">
+                        <strong>Consejo:</strong>
+                        si utilizas principalmente el móvil, prueba la vista que te permita reconocer
+                        los accesos con menos desplazamiento. En escritorio, una vista más densa puede
+                        resultar más eficiente.
+                    </div>
+
+                `
+            },
+
+            {
+                id: 'lib-08',
+
+                title: 'Busca rápidamente entre tus recursos',
+
+                category: 'Organización',
+
+                summary:
+                    'Utiliza el buscador para localizar accesos sin tener que recorrer toda la biblioteca manualmente.',
+
+                date: '5 Oct 2026',
+
+                content: `
+
+                    <p>
+                        Cuando una biblioteca crece, desplazarte tarjeta por tarjeta deja de ser eficiente.
+                        El buscador está pensado precisamente para ese escenario.
+                    </p>
+
+                    <h3>Qué puedes buscar</h3>
+
+                    <p>
+                        La búsqueda tiene en cuenta información como el <strong>título</strong>,
+                        la <strong>descripción</strong>, las <strong>etiquetas</strong> y el contenido
+                        textual asociado a los recursos.
+                    </p>
+
+                    <p>
+                        Puedes buscar una palabra relacionada con la materia, el tipo de recurso o
+                        directamente parte del nombre.
+                    </p>
+
+                    <h3>Combínalo con una buena organización</h3>
+
+                    <p>
+                        El buscador no sustituye a las etiquetas ni a favoritos. Las tres funciones
+                        tienen objetivos diferentes.
+                    </p>
+
+                    <div class="feature-grid">
+
+                        <div class="feature-card">
+                            <i data-lucide="search" size="19"></i>
+                            <strong>Buscar</strong>
+                            <span>Encuentra algo concreto rápidamente.</span>
+                        </div>
+
+                        <div class="feature-card">
+                            <i data-lucide="tags" size="19"></i>
+                            <strong>Etiquetar</strong>
+                            <span>Añade contexto y clasificación.</span>
+                        </div>
+
+                        <div class="feature-card">
+                            <i data-lucide="star" size="19"></i>
+                            <strong>Favoritos</strong>
+                            <span>Señala lo que utilizas con frecuencia.</span>
+                        </div>
+
+                        <div class="feature-card">
+                            <i data-lucide="pin" size="19"></i>
+                            <strong>Fijar</strong>
+                            <span>Prioriza accesos determinados.</span>
+                        </div>
+
+                    </div>
+
+                    <div class="tip-box">
+                        <strong>Consejo:</strong>
+                        si tienes que buscar habitualmente un recurso por una misma palabra,
+                        considera añadirla como etiqueta.
+                    </div>
+
+                `
+            },
+
+            {
+                id: 'lib-09',
+
+                title: 'Tus datos se guardan localmente',
+
+                category: 'Privacidad',
+
+                summary:
+                    'Entiende dónde se almacenan tus preferencias y recursos personalizados y qué implica el modelo local de la aplicación.',
+
+                date: '5 Oct 2026',
+
+                content: `
+
+                    <p>
+                        Acceso Libros utiliza el almacenamiento local del navegador para conservar parte
+                        de su estado, incluyendo la configuración y los recursos personalizados.
+                    </p>
+
+                    <h3>Qué significa "local"</h3>
+
+                    <p>
+                        Los datos guardados de esta forma pertenecen al almacenamiento del navegador
+                        del dispositivo donde utilizas la aplicación.
+                    </p>
+
+                    <p>
+                        Esto permite que la aplicación funcione sin necesitar una cuenta de usuario
+                        para mantener la biblioteca básica.
+                    </p>
+
+                    <h3>La contrapartida</h3>
+
+                    <p>
+                        El almacenamiento local no debe tratarse como una copia de seguridad infalible.
+                        Si borras los datos del navegador o utilizas otro dispositivo, el estado local
+                        puede no estar disponible allí.
+                    </p>
+
+                    <p>
+                        Para información que quieras conservar o transferir, utiliza las funciones de
+                        copia de seguridad y exportación disponibles en Acceso Libros.
+                    </p>
+
+                    <div class="warning-box">
+                        <strong>No confundas "local" con "sin riesgo de pérdida".</strong>
+                        Si una biblioteca es importante, conserva una copia de seguridad.
+                    </div>
+
+                    <h3>Ventaja de privacidad</h3>
+
+                    <p>
+                        El modelo local reduce la necesidad de mantener una cuenta centralizada simplemente
+                        para guardar tu configuración personal.
+                    </p>
+
+                `
+            },
+
+            {
+                id: 'lib-10',
+
+                title: 'Haz copias de seguridad de tu biblioteca',
+
+                category: 'Configuración',
+
+                summary:
+                    'Una biblioteca local también necesita una copia de seguridad. Aprende cuándo merece la pena exportarla.',
+
+                date: '5 Oct 2026',
+
+                content: `
+
+                    <p>
+                        Si has invertido tiempo en crear y organizar una biblioteca personalizada,
+                        hacer una copia de seguridad es una buena práctica.
+                    </p>
+
+                    <h3>Cuándo hacerla</h3>
+
+                    <ul>
+                        <li>Después de añadir muchos recursos importantes.</li>
+                        <li>Antes de limpiar o modificar una colección grande.</li>
+                        <li>Antes de cambiar de navegador o dispositivo.</li>
+                        <li>Cuando quieras conservar una versión concreta de tu biblioteca.</li>
+                    </ul>
+
+                    <h3>Por qué es importante</h3>
+
+                    <p>
+                        Los datos locales dependen del navegador y dispositivo donde están almacenados.
+                        Una copia exportada te permite conservar la información independientemente de
+                        ese almacenamiento.
+                    </p>
+
+                    <h3>Combina tres métodos</h3>
+
+                    <p>
+                        Para una biblioteca importante puedes combinar:
+                    </p>
+
+                    <ol>
+                        <li>La biblioteca local habitual.</li>
+                        <li>Una copia de seguridad exportada.</li>
+                        <li>URLs compartidas para recursos o colecciones concretas que quieras enviar a otras personas.</li>
+                    </ol>
+
+                    <div class="tip-box">
+                        <strong>Consejo:</strong>
+                        guarda las copias de seguridad en un lugar donde puedas recuperarlas incluso
+                        si pierdes acceso al dispositivo original.
+                    </div>
+
+                `
+            },
+
+            {
+                id: 'lib-11',
+
+                title: 'Una biblioteca que puede crecer contigo',
+
+                category: 'Buenas prácticas',
+
+                summary:
+                    'Cómo mantener una colección útil cuando los recursos cambian, aparecen nuevos accesos o dejan de estar disponibles.',
+
+                date: '5 Oct 2026',
+
+                content: `
+
+                    <p>
+                        Una colección de recursos educativos no debería diseñarse como una lista inmutable.
+                        Las páginas cambian, aparecen nuevas plataformas y algunos enlaces pueden dejar
+                        de ser relevantes.
+                    </p>
+
+                    <h3>Prioriza la estructura, no el catálogo</h3>
+
+                    <p>
+                        En lugar de construir tu biblioteca alrededor de una lista fija de libros,
+                        utiliza Acceso Libros como una capa de organización.
+                    </p>
+
+                    <p>
+                        El objetivo es que puedas sustituir, añadir o eliminar recursos sin tener que
+                        replantear toda la estructura.
+                    </p>
+
+                    <h3>Revisa los accesos de vez en cuando</h3>
+
+                    <p>
+                        Si una URL deja de funcionar, elimínala o sustitúyela. Si un recurso cambia de
+                        plataforma, actualiza su acceso en lugar de mantener un enlace obsoleto.
+                    </p>
+
+                    <h3>Evita sobreorganizar</h3>
+
+                    <p>
+                        Tener veinte categorías y decenas de etiquetas puede acabar siendo menos útil
+                        que tener una estructura sencilla.
+                    </p>
+
+                    <div class="tip-box">
+                        <strong>Una buena regla:</strong>
+                        si tardas más tiempo en decidir dónde colocar un recurso que en encontrarlo
+                        después, probablemente tu organización es demasiado complicada.
+                    </div>
+
+                `
+            },
+
+            {
+                id: 'lib-12',
+
+                title: 'Acceso Libros como biblioteca personal',
+
+                category: 'Descubre',
+
+                summary:
+                    'La idea detrás de la aplicación: una interfaz sencilla para reunir accesos educativos sin convertirla en un catálogo cerrado.',
+
+                date: '5 Oct 2026',
+
+                content: `
+
+                    <p>
+                        Acceso Libros está pensado para resolver un problema sencillo:
+                        tener demasiados recursos repartidos entre marcadores, pestañas, documentos
+                        y mensajes.
+                    </p>
+
+                    <p>
+                        En lugar de intentar sustituir cada servicio educativo, la aplicación funciona
+                        como una <strong>capa de acceso y organización</strong>.
+                    </p>
+
+                    <h3>La biblioteca no tiene por qué ser igual para todos</h3>
+
+                    <p>
+                        Cada persona puede construir su propia colección. Puedes utilizar los recursos
+                        incluidos inicialmente, añadir accesos personalizados, cambiar su aspecto,
+                        marcar favoritos y organizar la biblioteca según tus necesidades.
+                    </p>
+
+                    <h3>También puedes compartirla</h3>
+
+                    <p>
+                        Cuando una selección puede ser útil para otra persona, puedes compartir accesos
+                        o colecciones mediante URLs sin tener que convertir la aplicación en una red
+                        social o en un servicio de almacenamiento centralizado.
+                    </p>
+
+                    <h3>Y puedes llevártela a otros dispositivos</h3>
+
+                    <p>
+                        Al ser una aplicación web, la interfaz puede utilizarse desde diferentes tipos
+                        de dispositivos. Para trasladar los datos personalizados entre ellos existen
+                        mecanismos de exportación, importación y compartición.
+                    </p>
+
+                    <hr>
+
+                    <p>
+                        La idea fundamental es sencilla:
+                        <strong>menos tiempo buscando dónde está un recurso y más tiempo utilizándolo.</strong>
+                    </p>
+
+                `
+            }
+
+        ];
+
+
+        /* ============================================================
+           ESTADO
+           ============================================================ */
+
+        let appData = {
+            articles: [],
+            currentCategory: 'Todos',
+            searchQuery: ''
+        };
+
+        let currentActiveArticle = null;
+        let isModalOpen = false;
+
+
+        /* ============================================================
+           ESTADÍSTICAS DE LECTURA
+           ============================================================ */
+
+        function getReadingStats(html) {
+
+            const text = html
+                .replace(/<[^>]+>/g, " ")
+                .replace(/\s+/g, " ")
+                .trim();
+
+            const words = text
+                ? text.split(/\s+/).filter(Boolean).length
+                : 0;
+
+            const minutes = Math.max(
+                1,
+                Math.ceil(words / 220)
+            );
+
+            return {
+                words,
+                minutes,
+                readTime: `${minutes} min lectura`
+            };
+        }
+
+
+        /* ============================================================
+           TEMA
+           ============================================================ */
+
+        function applyLocalTheme() {
+
+            try {
+
+                const saved = JSON.parse(
+                    localStorage.getItem('school_library_data') || 'null'
+                );
+
+                if (saved?.theme) {
+                    document.documentElement.dataset.theme = saved.theme;
+                }
+
+                if (saved?.accent) {
+                    document.documentElement.style.setProperty(
+                        '--accent',
+                        saved.accent
+                    );
+                }
+
+            } catch (_) {}
+
+            updateThemeIcon();
+        }
+
+
+        function toggleTheme() {
+
+            const current =
+                document.documentElement.dataset.theme || 'dark';
+
+            const next =
+                current === 'dark' ? 'light' : 'dark';
+
+            document.documentElement.dataset.theme = next;
+
+            /*
+                Guardamos el tema también en el estado de Acceso Libros
+                si existe. Así el cambio realizado desde Consejos queda
+                sincronizado con index.html.
+            */
+
+            try {
+
+                const saved = JSON.parse(
+                    localStorage.getItem('school_library_data') || '{}'
+                );
+
+                saved.theme = next;
+
+                localStorage.setItem(
+                    'school_library_data',
+                    JSON.stringify(saved)
+                );
+
+            } catch (_) {}
+
+            updateThemeIcon();
+        }
+
+
+        function updateThemeIcon() {
+
+            const button =
+                document.getElementById('theme-toggle-btn');
+
+            if (!button) return;
+
+            const isLight =
+                document.documentElement.dataset.theme === 'light';
+
+            button.innerHTML = isLight
+                ? '<i data-lucide="moon" size="18"></i>'
+                : '<i data-lucide="sun" size="18"></i>';
+
+            button.title =
+                isLight
+                    ? 'Cambiar a tema oscuro'
+                    : 'Cambiar a tema claro';
+
+            button.setAttribute(
+                'aria-label',
+                button.title
+            );
+
+            refreshIcons();
+        }
+
+
+        /* ============================================================
+           INICIALIZACIÓN
+           ============================================================ */
+
+        function initApp() {
+
+            appData.articles = DEFAULT_ARTICLES.map(article => {
+
+                const stats =
+                    getReadingStats(article.content);
+
+                return {
+                    ...article,
+                    readTime: stats.readTime,
+                    words: stats.words,
+                    minutes: stats.minutes
+                };
+
+            });
+
+            applyLocalTheme();
+
+            setupEventListeners();
+
+            renderApp();
+
+            refreshIcons();
+        }
+
+
+        /* ============================================================
+           EVENTOS
+           ============================================================ */
+
+        function setupEventListeners() {
+
+            const searchInput =
+                document.getElementById('search-input');
+
+            searchInput.addEventListener(
+                'input',
+                event => {
+
+                    const query =
+                        event.target.value
+                            .trim()
+                            .toLowerCase();
+
+                    const list =
+                        document.getElementById('articles-list');
+
+                    list.classList.add('fade-out');
+
+                    setTimeout(() => {
+
+                        appData.searchQuery = query;
+
+                        renderArticlesList();
+
+                        list.classList.remove('fade-out');
+
+                    }, 120);
+
+                }
+            );
+
+
+            document
+                .getElementById('theme-toggle-btn')
+                .addEventListener(
+                    'click',
+                    toggleTheme
+                );
+
+
+            window.addEventListener(
+                'keydown',
+                event => {
+
+                    if (
+                        (event.ctrlKey || event.metaKey) &&
+                        event.key.toLowerCase() === 'k'
+                    ) {
+
+                        event.preventDefault();
+
+                        searchInput.focus();
+                    }
+
+                    if (event.key === 'Escape') {
+                        closeArticleModal();
+                    }
+
+                }
+            );
+
+
+            const reader =
+                document.getElementById(
+                    'reader-body-container'
+                );
+
+            reader.addEventListener(
+                'scroll',
+                updateReadingProgress
+            );
+
+
+            /*
+                Si el usuario cambia el tema desde index.html
+                mientras esta página permanece abierta, intentamos
+                detectar el cambio cuando la pestaña vuelve a estar activa.
+            */
+
+            window.addEventListener(
+                'focus',
+                applyLocalTheme
+            );
+
+            window.addEventListener(
+                'storage',
+                event => {
+
+                    if (
+                        event.key === 'school_library_data'
+                    ) {
+                        applyLocalTheme();
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* ============================================================
+           RENDER
+           ============================================================ */
+
+        function renderApp() {
+
+            renderCategories();
+
+            renderArticlesList();
+
+            refreshIcons();
+        }
+
+
+        function renderCategories() {
+
+            const container =
+                document.getElementById(
+                    'categories-container'
+                );
+
+            const categories = [
+                'Todos',
+                ...new Set(
+                    appData.articles.map(
+                        article => article.category
+                    )
+                )
+            ];
+
+            container.innerHTML =
+                categories.map(category => `
+
+                    <button
+                        class="category-pill ${
+                            appData.currentCategory === category
+                                ? 'active'
+                                : ''
+                        }"
+                        onclick="selectCategory('${escapeAttribute(category)}')">
+
+                        ${escapeHtml(category)}
+
+                    </button>
+
+                `).join('');
+        }
+
+
+        function selectCategory(category) {
+
+            appData.currentCategory = category;
+
+            renderApp();
+        }
+
+
+        function renderArticlesList() {
+
+            const container =
+                document.getElementById(
+                    'articles-list'
+                );
+
+            const filtered =
+                appData.articles.filter(article => {
+
+                    const matchesCategory =
+                        appData.currentCategory === 'Todos' ||
+                        article.category === appData.currentCategory;
+
+                    const plainContent =
+                        article.content
+                            .replace(/<[^>]+>/g, ' ')
+                            .toLowerCase();
+
+                    const matchesSearch =
+                        !appData.searchQuery ||
+
+                        article.title
+                            .toLowerCase()
+                            .includes(appData.searchQuery) ||
+
+                        article.summary
+                            .toLowerCase()
+                            .includes(appData.searchQuery) ||
+
+                        article.category
+                            .toLowerCase()
+                            .includes(appData.searchQuery) ||
+
+                        plainContent.includes(
+                            appData.searchQuery
+                        );
+
+                    return (
+                        matchesCategory &&
+                        matchesSearch
+                    );
+
+                });
+
+
+            if (!filtered.length) {
+
+                container.innerHTML = `
+
+                    <div class="empty-state">
+
+                        <i data-lucide="search-x" size="46"></i>
+
+                        <strong>
+                            No se encontraron guías
+                        </strong>
+
+                        <span>
+                            Prueba con otra búsqueda o selecciona
+                            la categoría «Todos».
+                        </span>
+
+                    </div>
+
+                `;
+
+                refreshIcons();
+
+                return;
+            }
+
+
+            container.innerHTML =
+                filtered.map((article, index) => `
+
+                    <article
+                        class="article-card"
+                        style="animation-delay:${index * 45}ms"
+                        onclick="openArticle('${article.id}')">
+
+                        <div class="article-card-body">
+
+                            <div class="article-card-header">
+
+                                <span class="article-badge">
+                                    ${escapeHtml(article.category)}
+                                </span>
+
+                                <span class="article-time">
+                                    ${article.minutes} min
+                                </span>
+
+                            </div>
+
+                            <h3>
+                                ${escapeHtml(article.title)}
+                            </h3>
+
+                            <p>
+                                ${escapeHtml(article.summary)}
+                            </p>
+
+                            <div class="article-card-footer">
+
+                                <i
+                                    data-lucide="book-open"
+                                    size="14">
+                                </i>
+
+                                <span>
+                                    Leer guía
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                `).join('');
+
+
+            refreshIcons();
+        }
+
+
+        /* ============================================================
+           LECTOR
+           ============================================================ */
+
+        function openArticle(id) {
+
+            const article =
+                appData.articles.find(
+                    item => item.id === id
+                );
+
+            if (!article) return;
+
+            currentActiveArticle = article;
+
+            const modal =
+                document.getElementById(
+                    'reader-modal'
+                );
+
+            const content =
+                document.getElementById(
+                    'reader-content-inner'
+                );
+
+            const badge =
+                document.getElementById(
+                    'modal-category-badge'
+                );
+
+
+            badge.textContent =
+                article.category;
+
+
+            content.innerHTML = `
+
+                <h2>
+                    ${escapeHtml(article.title)}
+                </h2>
+
+                <div class="reader-meta-info">
+
+                    <span>
+                        <i data-lucide="calendar" size="14"></i>
+                        ${escapeHtml(article.date)}
+                    </span>
+
+                    <span>•</span>
+
+                    <span>
+                        <i data-lucide="clock" size="14"></i>
+                        ${article.readTime}
+                    </span>
+
+                    <span>•</span>
+
+                    <span id="modal-remaining-time">
+                        ${article.minutes} min restantes
+                    </span>
+
+                </div>
+
+                <div class="article-body">
+
+                    ${article.content}
+
+                </div>
+
+            `;
+
+
+            modal.classList.add('active');
+
+            if (!isModalOpen) {
+
+                window.history.pushState(
+                    { modalOpen: true },
+                    ''
+                );
+
+                isModalOpen = true;
+            }
+
+
+            const reader =
+                document.getElementById(
+                    'reader-body-container'
+                );
+
+            reader.scrollTop = 0;
+
+            document
+                .getElementById(
+                    'reading-progress-bar'
+                )
+                .style.width = '0%';
+
+
+            document.body.style.overflow = 'hidden';
+
+            refreshIcons();
+        }
+
+
+        function closeArticleModal() {
+
+            if (!isModalOpen) return;
+
+            window.history.back();
+        }
+
+
+        function closeReaderImmediately() {
+
+            const modal =
+                document.getElementById(
+                    'reader-modal'
+                );
+
+            modal.classList.remove('active');
+
+            isModalOpen = false;
+
+            document.body.style.overflow = '';
+
+            currentActiveArticle = null;
+
+            document
+                .getElementById(
+                    'reading-progress-bar'
+                )
+                .style.width = '0%';
+        }
+
+
+        window.addEventListener(
+            'popstate',
+            () => {
+
+                if (isModalOpen) {
+                    closeReaderImmediately();
+                }
+
+            }
+        );
+
+
+        /* ============================================================
+           PROGRESO DE LECTURA
+           ============================================================ */
+
+        function updateReadingProgress() {
+
+            const reader =
+                document.getElementById(
+                    'reader-body-container'
+                );
+
+            const progressBar =
+                document.getElementById(
+                    'reading-progress-bar'
+                );
+
+            const maxScroll =
+                reader.scrollHeight -
+                reader.clientHeight;
+
+            const percent =
+                maxScroll > 0
+                    ? Math.min(
+                        100,
+                        Math.max(
+                            0,
+                            (reader.scrollTop / maxScroll) * 100
+                        )
+                    )
+                    : 0;
+
+            progressBar.style.width =
+                `${percent}%`;
+
+
+            if (currentActiveArticle) {
+
+                const remaining =
+                    Math.max(
+                        0,
+                        Math.ceil(
+                            currentActiveArticle.minutes *
+                            (1 - percent / 100)
+                        )
+                    );
+
+                const time =
+                    document.getElementById(
+                        'modal-remaining-time'
+                    );
+
+                if (time) {
+
+                    time.textContent =
+                        remaining === 0
+                            ? 'Finalizado'
+                            : `${remaining} min restantes`;
+
+                }
+
+            }
+
+        }
+
+
+        /* ============================================================
+           UTILIDADES
+           ============================================================ */
+
+        function refreshIcons() {
+
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+
+        }
+
+
+        function escapeHtml(value) {
+
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+
+        }
+
+
+        function escapeAttribute(value) {
+
+            return String(value)
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, "\\'");
+        }
+
+
+        /* ============================================================
+           ARRANQUE
+           ============================================================ */
+
+        window.addEventListener(
+            'load',
+            initApp
+        );
+
+    </script>
+
+</body>
+
+</html>
