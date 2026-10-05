@@ -141,36 +141,75 @@ acceso-libros/
     ├── consejos.html
     └── preset-editor.html
 ```
-​index.html: Aplicación principal de Acceso Libros. Contiene la interfaz, estilos y lógica necesaria para gestionar la biblioteca.
-​Media/preset-editor.html: Editor visual utilizado para crear y mantener los presets de recursos.
-​Media/consejos.html: Página de consejos y documentación para los usuarios de la aplicación.
-​🚀 Uso
-​No es necesario instalar dependencias para utilizar Acceso Libros. Puedes abrir index.html directamente en un navegador compatible o servir el proyecto desde cualquier servidor web estático.
-​Al tratarse de una aplicación basada en tecnologías web estándar, también puede alojarse fácilmente en servicios como GitHub Pages.
-​🤖 Uso de inteligencia artificial
-​Durante el desarrollo de Acceso Libros se han utilizado herramientas de inteligencia artificial como apoyo para programación, diseño, generación de ideas, depuración y desarrollo de determinadas partes del proyecto.
-​La IA forma parte del proceso de desarrollo, pero el proyecto, su estructura, selección de funcionalidades, diseño final, configuración y decisiones de implementación han sido revisados y adaptados durante su desarrollo.
-​Este repositorio no pretende presentar el proyecto como si hubiera sido desarrollado íntegramente de forma manual sin asistencia de IA.
-​🖼️ Imágenes, logotipos y contenido de terceros
-​Acceso Libros utiliza algunos recursos visuales externos, incluyendo imágenes, logotipos, iconos o material asociado a servicios y marcas enlazados desde la aplicación.
-​Estos materiales no son propiedad del autor de Acceso Libros.
-​Los nombres comerciales, marcas, logotipos e imágenes pertenecen a sus respectivos propietarios. Su presencia dentro de la aplicación sirve únicamente para identificar los servicios o recursos externos a los que se enlaza.
-​En particular, el hecho de que un servicio aparezca como recurso dentro de Acceso Libros no implica afiliación, patrocinio, autorización ni relación oficial con dicho servicio.
-​Si algún propietario de contenido considera que un recurso utilizado en el proyecto no debería aparecer aquí, puede solicitar su revisión o retirada.
-​⚖️ Derechos y licencia
-​El código y los elementos originales desarrollados específicamente para este proyecto pertenecen a su autor, salvo que se indique expresamente lo contrario. Los recursos de terceros mantienen sus correspondientes derechos y condiciones de uso.
-​Acceso Libros no reclama la propiedad de las marcas, logotipos, imágenes o contenidos externos que aparecen asociados a los recursos enlazados.
-​Este repositorio no incluye actualmente una licencia de software específica. Por tanto, la publicación del código en GitHub no debe interpretarse automáticamente como una concesión de derechos para reutilizarlo, modificarlo o redistribuirlo. Si en el futuro se añade una licencia, esta sección deberá actualizarse para reflejarla.
-​🔐 Seguridad y limitaciones
-​Acceso Libros está diseñado como una herramienta personal para organizar accesos a recursos externos.
-​No controla el contenido de las páginas a las que enlaza ni garantiza su disponibilidad, seguridad, legalidad o funcionamiento.
-​Los enlaces y servicios externos pueden cambiar, desaparecer o modificar sus condiciones de uso independientemente de este proyecto.
-​Por la misma razón, Acceso Libros debe considerarse una interfaz de organización y acceso, no una plataforma que aloje o distribuya los libros o contenidos externos mostrados en ella.
-​📌 Estado del proyecto
-​Acceso Libros es un proyecto en desarrollo. Las funciones pueden cambiar, mejorarse o sustituirse con el tiempo. Algunas partes están pensadas específicamente para uso personal y pueden no estar preparadas para escenarios de producción a gran escala.
-​👤 Autor
-​Guilleplayer
-GitHub: @CapybaraGalaxy
-​📄 Nota final
-​Acceso Libros nace como un proyecto para hacer más cómodo el acceso a recursos digitales relacionados con lectura, educación y estudio, reuniéndolos en una interfaz sencilla y personalizable.
-​El objetivo no es sustituir los servicios enlazados, sino ofrecer un punto de acceso práctico para tenerlos organizados en un único lugar.
+​* **`index.html`**: Aplicación principal de Acceso Libros. Contiene la interfaz, estilos y lógica necesaria para gestionar la biblioteca.
+* **`Media/preset-editor.html`**: Editor visual utilizado para crear y mantener los presets de recursos.
+* **`Media/consejos.html`**: Página de consejos y documentación para los usuarios de la aplicación.
+
+---
+
+## 🚀 Uso
+
+No es necesario instalar dependencias para utilizar Acceso Libros. Puedes abrir `index.html` directamente en un navegador compatible o servir el proyecto desde cualquier servidor web estático.
+
+Al tratarse de una aplicación basada en tecnologías web estándar, también puede alojarse fácilmente en servicios como GitHub Pages.
+
+---
+
+## 🤖 Uso de inteligencia artificial
+
+Durante el desarrollo de Acceso Libros se han utilizado herramientas de inteligencia artificial como apoyo para programación, diseño, generación de ideas, depuración y desarrollo de determinadas partes del proyecto.
+
+La IA forma parte del proceso de desarrollo, pero el proyecto, su estructura, selección de funcionalidades, diseño final, configuración y decisiones de implementación han sido revisados y adaptados durante su desarrollo.
+
+Este repositorio no pretende presentar el proyecto como si hubiera sido desarrollado íntegramente de forma manual sin asistencia de IA.
+
+---
+
+## 🖼️ Imágenes, logotipos y contenido de terceros
+
+Acceso Libros utiliza algunos recursos visuales externos, incluyendo imágenes, logotipos, iconos o material asociado a servicios y marcas enlazados desde la aplicación.
+
+* Estos materiales **no son propiedad del autor** de Acceso Libros.
+* Los nombres comerciales, marcas, logotipos e imágenes pertenecen a sus respectivos propietarios. Su presencia dentro de la aplicación sirve únicamente para identificar los servicios o recursos externos a los que se enlaza.
+* En particular, el hecho de que un servicio aparezca como recurso dentro de Acceso Libros **no implica afiliación, patrocinio, autorización ni relación oficial** con dicho servicio.
+* Si algún propietario de contenido considera que un recurso utilizado en el proyecto no debería aparecer aquí, puede solicitar su revisión o retirada.
+
+---
+
+## ⚖️ Derechos y licencia
+
+El código y los elementos originales desarrollados específicamente para este proyecto pertenecen a su autor, salvo que se indique expresamente lo contrario. Los recursos de terceros mantienen sus correspondientes derechos y condiciones de uso.
+
+Acceso Libros no reclama la propiedad de las marcas, logotipos, imágenes o contenidos externos que aparecen asociados a los recursos enlazados.
+
+Este repositorio **no incluye actualmente una licencia de software específica**. Por tanto, la publicación del código en GitHub no debe interpretarse automáticamente como una concesión de derechos para reutilizarlo, modificarlo o redistribuirlo. Si en el futuro se añade una licencia, esta sección deberá actualizarse para reflejarla.
+
+---
+
+## 🔐 Seguridad y limitaciones
+
+Acceso Libros está diseñado como una herramienta personal para organizar accesos a recursos externos.
+* **No controla** el contenido de las páginas a las que enlaza ni garantiza su disponibilidad, seguridad, legalidad o funcionamiento.
+* Los enlaces y servicios externos pueden cambiar, desaparecer o modificar sus condiciones de uso independientemente de este proyecto.
+* Por la misma razón, Acceso Libros debe considerarse una **interfaz de organización y acceso**, no una plataforma que aloje o distribuya los libros o contenidos externos mostrados en ella.
+
+---
+
+## 📌 Estado del proyecto
+
+Acceso Libros es un proyecto en desarrollo. Las funciones pueden cambiar, mejorarse o sustituirse con el tiempo. Algunas partes están pensadas específicamente para uso personal y pueden no estar preparadas para escenarios de producción a gran escala.
+
+---
+
+## 👤 Autor
+
+**Guilleplayer**  
+GitHub: [@CapybaraGalaxy](https://github.com/CapybaraGalaxy)
+
+---
+
+## 📄 Nota final
+
+Acceso Libros nace como un proyecto para hacer más cómodo el acceso a recursos digitales relacionados con lectura, educación y estudio, reuniéndolos en una interfaz sencilla y personalizable.
+
+El objetivo no es sustituir los servicios enlazados, sino ofrecer un punto de acceso práctico para tenerlos organizados en un único lugar.
